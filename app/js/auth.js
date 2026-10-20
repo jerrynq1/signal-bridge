@@ -38,6 +38,7 @@ const GX=(function(){
     if(r.status===401){let e="expired";try{e=(await r.json()).error||e}catch(_){}g.expired(e);return}
     if(!r.ok)return;
     g.me=await r.json();
+    if(g.me.terms_ok===false){g.expired("terms_update");return} // chưa đồng ý bản điều khoản hiện hành (tài khoản cũ hoặc điều khoản vừa đổi) -> về login tích lại
     const box=document.getElementById("usr");
     if(box){document.getElementById("usrImg").src=g.me.avatar_url;document.getElementById("usrName").textContent=g.me.name;box.hidden=false}
     g.cbs.splice(0).forEach(f=>f(g.me));
