@@ -191,7 +191,7 @@ label small{font-weight:400}
 .tm-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
 .tm-h h3{margin:0;font-size:17px}
 .tm-x{border:0;background:none;color:var(--mut);font-size:22px;line-height:1;cursor:pointer;padding:2px 6px}
-.tm-b{padding:14px 20px;overflow:auto;font-size:13.5px;line-height:1.6}
+.tm-b{padding:0;overflow:hidden;flex:1;min-height:0}.tm-b iframe{display:block;width:100%;height:min(62vh,540px);border:0;background:transparent}
 .tm-b h4{margin:14px 0 4px;font-size:14px;color:var(--acc)}.tm-b h4:first-child{margin-top:0}
 .tm-b p,.tm-b li{margin:0 0 6px;color:var(--ink)}.tm-b ul{margin:0 0 6px;padding-left:20px}
 .tm-f{padding:12px 20px 16px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
@@ -224,27 +224,8 @@ label small{font-weight:400}
 <div class="tm" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle" hidden>
   <div class="tm-box">
     <div class="tm-h"><h3 id="tmTitle">Điều khoản sử dụng và Chính sách dữ liệu</h3><button type="button" class="tm-x" id="tmX" aria-label="Đóng">×</button></div>
-    <div class="tm-b">
-      <h4>1. Dịch vụ</h4>
-      <p>Gexadecimal là nhật ký giao dịch chạy trên trình duyệt, dành riêng cho thành viên server Discord của chúng tôi. Bạn cần đăng nhập bằng Discord và còn trong server (đủ role nếu có yêu cầu) để sử dụng.</p>
-      <h4>2. Dữ liệu chúng tôi thu thập từ Discord</h4>
-      <ul>
-        <li>ID, tên hiển thị hoặc biệt danh và ảnh đại diện Discord của bạn.</li>
-        <li>Việc bạn có trong server hay không và các role của bạn, chỉ để xác nhận quyền truy cập.</li>
-        <li>Chúng tôi không đọc tin nhắn, không xem email và không lấy mật khẩu Discord của bạn.</li>
-      </ul>
-      <h4>3. Dữ liệu giao dịch</h4>
-      <p>Các lệnh bạn đồng bộ từ MT5 (qua EA và khoá EA riêng của bạn) và ghi chú trong Journal được lưu theo tài khoản Discord của bạn, để hiển thị thống kê và thẻ chiến tích. Dữ liệu cũng có thể được lưu trên trình duyệt của bạn (localStorage).</p>
-      <h4>4. Cách sử dụng và chia sẻ</h4>
-      <p>Dữ liệu chỉ dùng để vận hành và cải thiện Gexadecimal. Chúng tôi không bán dữ liệu của bạn và không chia sẻ cho bên thứ ba, trừ khi pháp luật yêu cầu.</p>
-      <h4>5. Quyền của bạn</h4>
-      <p>Bạn có thể đăng xuất bất cứ lúc nào, đặt lại khoá EA, hoặc tự xoá vĩnh viễn tài khoản và toàn bộ dữ liệu bằng nút &quot;Xoá tài khoản&quot; ở mục Kết nối sau khi đăng nhập. Nếu rời server hoặc mất role, quyền truy cập sẽ bị thu hồi.</p>
-      <h4>6. Miễn trừ rủi ro</h4>
-      <p>Giao dịch có rủi ro. Nội dung và số liệu chỉ mang tính tham khảo, không phải lời khuyên đầu tư. Bạn tự chịu trách nhiệm cho mọi quyết định giao dịch của mình.</p>
-      <h4>7. Thay đổi</h4>
-      <p>Chúng tôi có thể cập nhật điều khoản này. Việc tiếp tục sử dụng đồng nghĩa với việc bạn chấp nhận nội dung mới.</p>
-    </div>
-    <div class="tm-f"><button type="button" class="btn ghost" id="tmClose">Đóng</button><button type="button" class="btn" id="tmAgree">Tôi đồng ý</button></div>
+    <div class="tm-b"><iframe id="tmFrame" title="Điều khoản sử dụng và Chính sách dữ liệu" src="about:blank"></iframe></div>
+    <div class="tm-f"><a class="btn ghost" id="tmOpen" href="terms.html" target="_blank" rel="noopener">Mở trang riêng</a><button type="button" class="btn ghost" id="tmClose">Đóng</button><button type="button" class="btn" id="tmAgree">Tôi đồng ý</button></div>
   </div>
 </div>
 
@@ -293,7 +274,8 @@ $("#yr").textContent = new Date().getFullYear();
    Nút chuyển sang Worker (/auth/discord/login) -> Discord -> Worker kiểm tra có trong server không
    -> chuyển về app/index.html#token=... (xem app/js/auth.js). Lỗi được Worker gửi về qua ?error=... */
 const API = ((window.GX_CONFIG && window.GX_CONFIG.API_URL) || "").trim().replace(/\/+$/, "");
-$("#dcBtn").href = API + "/auth/discord/login";
+const TERMS_VERSION = "2026-10-20-2";   // phải trùng TERMS_VERSION trong worker.js; đổi cả hai khi sửa điều khoản
+$("#dcBtn").href = API + "/auth/discord/login?terms=" + TERMS_VERSION;
 /* Phải tích đồng ý Điều khoản/Chính sách mới được đăng nhập */
 const chk = $("#agreeChk"), box = $("#agreeBox"), dcb = $("#dcBtn");
 const syncAgree = () => { dcb.classList.toggle("off", !chk.checked); dcb.setAttribute("aria-disabled", String(!chk.checked)); if (chk.checked) { box.classList.remove("bad"); if ($("#authErr").dataset.agree) { $("#authErr").textContent = ""; delete $("#authErr").dataset.agree; } } };
@@ -308,9 +290,15 @@ dcb.addEventListener("click", e => {
 });
 /* Cửa sổ điều khoản */
 const tm = $("#termsModal");
-const openTm = e => { e.preventDefault(); tm.hidden = false; $(".tm-b", tm).scrollTop = 0; $("#tmAgree").focus(); };
+/* Nội dung điều khoản nằm ở terms.html (một nguồn duy nhất), cửa sổ này chỉ nhúng nó vào */
+const openTm = h => e => {
+  e.preventDefault();
+  $("#tmFrame").src = "terms.html?embed=1&lang=" + LANG + "&theme=" + document.documentElement.dataset.theme + h;
+  $("#tmOpen").href = "terms.html?lang=" + LANG + h;
+  tm.hidden = false; $("#tmAgree").focus();
+};
 const closeTm = () => { tm.hidden = true; };
-$("#termsLink").onclick = openTm; $("#privLink").onclick = openTm;
+$("#termsLink").onclick = openTm(""); $("#privLink").onclick = openTm("#data");
 $("#tmX").onclick = closeTm; $("#tmClose").onclick = closeTm;
 $("#tmAgree").onclick = () => { chk.checked = true; syncAgree(); closeTm(); };
 tm.addEventListener("click", e => { if (e.target === tm) closeTm(); });
@@ -325,6 +313,8 @@ const AUTH_ERR = {
   not_in_server: "Tài khoản Discord của bạn chưa ở trong server. Hãy tham gia server rồi đăng nhập lại.",
   missing_role: "Tài khoản của bạn chưa có role được phép truy cập. Hãy liên hệ admin server.",
   denied: "Bạn đã huỷ đăng nhập Discord.",
+  terms: "Bạn cần đồng ý với Điều khoản sử dụng và Chính sách dữ liệu để đăng nhập.",
+  terms_update: "Điều khoản đã được cập nhật. Vui lòng đọc và đồng ý lại để tiếp tục.",
   expired: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
   other: "Đăng nhập không thành công, vui lòng thử lại."
 };
@@ -335,6 +325,7 @@ function renderAuthErr() {
 
 /* ===== Đa ngôn ngữ (vi / en / zh) ===== */
 const I18N = [
+["Mở trang riêng","Open full page","打开完整页面"],
 ["Tôi đã đọc và đồng ý với","I have read and agree to the","我已阅读并同意"],
 ["Điều khoản sử dụng","Terms of Use","使用条款"],
 ["Chính sách dữ liệu","Data Policy","数据政策"],
@@ -343,22 +334,6 @@ const I18N = [
 ["Điều khoản sử dụng và Chính sách dữ liệu","Terms of Use and Data Policy","使用条款和数据政策"],
 ["Đóng","Close","关闭"],
 ["Tôi đồng ý","I agree","我同意"],
-["1. Dịch vụ","1. The service","1. 服务内容"],
-["Gexadecimal là nhật ký giao dịch chạy trên trình duyệt, dành riêng cho thành viên server Discord của chúng tôi. Bạn cần đăng nhập bằng Discord và còn trong server (đủ role nếu có yêu cầu) để sử dụng.","Gexadecimal is a browser-based trading journal reserved for members of our Discord server. You must log in with Discord and still be in the server (with the required role, if any) to use it.","Gexadecimal 是运行在浏览器中的交易日志，仅供我们 Discord 服务器成员使用。您需要使用 Discord 登录，并且仍在服务器中（如有要求，还需拥有相应角色）。"],
-["2. Dữ liệu chúng tôi thu thập từ Discord","2. Data we collect from Discord","2. 我们从 Discord 收集的数据"],
-["ID, tên hiển thị hoặc biệt danh và ảnh đại diện Discord của bạn.","Your Discord ID, display name or nickname, and avatar.","您的 Discord ID、显示名称或昵称以及头像。"],
-["Việc bạn có trong server hay không và các role của bạn, chỉ để xác nhận quyền truy cập.","Whether you are in the server and your roles, solely to verify access.","您是否在服务器中以及您的角色，仅用于验证访问权限。"],
-["Chúng tôi không đọc tin nhắn, không xem email và không lấy mật khẩu Discord của bạn.","We do not read your messages, see your email, or obtain your Discord password.","我们不会读取您的消息、查看您的邮箱，也不会获取您的 Discord 密码。"],
-["3. Dữ liệu giao dịch","3. Trading data","3. 交易数据"],
-["Các lệnh bạn đồng bộ từ MT5 (qua EA và khoá EA riêng của bạn) và ghi chú trong Journal được lưu theo tài khoản Discord của bạn, để hiển thị thống kê và thẻ chiến tích. Dữ liệu cũng có thể được lưu trên trình duyệt của bạn (localStorage).","Trades you sync from MT5 (via the EA and your personal EA key) and your Journal notes are stored under your Discord account to show statistics and achievement cards. Data may also be stored in your browser (localStorage).","您从 MT5 同步的订单（通过 EA 和您专属的 EA 密钥）以及日志笔记会按您的 Discord 账号保存，用于展示统计数据和战绩卡。数据也可能保存在您的浏览器中（localStorage）。"],
-["4. Cách sử dụng và chia sẻ","4. Use and sharing","4. 使用与共享"],
-["Dữ liệu chỉ dùng để vận hành và cải thiện Gexadecimal. Chúng tôi không bán dữ liệu của bạn và không chia sẻ cho bên thứ ba, trừ khi pháp luật yêu cầu.","Data is used only to operate and improve Gexadecimal. We do not sell your data or share it with third parties, unless required by law.","数据仅用于运营和改进 Gexadecimal。除非法律要求，我们不会出售您的数据，也不会与第三方共享。"],
-["5. Quyền của bạn","5. Your rights","5. 您的权利"],
-["Bạn có thể đăng xuất bất cứ lúc nào, đặt lại khoá EA, hoặc tự xoá vĩnh viễn tài khoản và toàn bộ dữ liệu bằng nút \"Xoá tài khoản\" ở mục Kết nối sau khi đăng nhập. Nếu rời server hoặc mất role, quyền truy cập sẽ bị thu hồi.","You can log out at any time, reset your EA key, or permanently delete your account and all your data with the \"Delete account\" button in the Connection section after logging in. If you leave the server or lose the role, your access will be revoked.","您可以随时退出登录、重置 EA 密钥，或登录后在“连接”页面点击“删除账号”按钮，永久删除账号和全部数据。若退出服务器或失去角色，访问权限将被撤销。"],
-["6. Miễn trừ rủi ro","6. Risk disclaimer","6. 风险免责声明"],
-["Giao dịch có rủi ro. Nội dung và số liệu chỉ mang tính tham khảo, không phải lời khuyên đầu tư. Bạn tự chịu trách nhiệm cho mọi quyết định giao dịch của mình.","Trading involves risk. Content and figures are for reference only and are not investment advice. You are solely responsible for your own trading decisions.","交易有风险。内容和数据仅供参考，不构成投资建议。您需自行对所有交易决策负责。"],
-["7. Thay đổi","7. Changes","7. 变更"],
-["Chúng tôi có thể cập nhật điều khoản này. Việc tiếp tục sử dụng đồng nghĩa với việc bạn chấp nhận nội dung mới.","We may update these terms. Continuing to use the service means you accept the updated terms.","我们可能会更新这些条款。继续使用即表示您接受更新后的内容。"],
 ["Đăng nhập bằng Discord","Log in with Discord","使用 Discord 登录"],
 ["Chỉ dành cho thành viên server Discord của chúng tôi.","For members of our Discord server only.","仅限本 Discord 服务器成员。"],
 ["Tài khoản Discord của bạn chưa ở trong server. Hãy tham gia server rồi đăng nhập lại.","Your Discord account is not in the server. Join the server and log in again.","你的 Discord 账号不在服务器中。请先加入服务器再重新登录。"],
@@ -408,7 +383,8 @@ const I18N = [
 ["Đăng nhập thành công (demo, chưa nối API)","Logged in successfully (demo, API not connected)","登录成功（演示，尚未连接 API）"],
 ["Tạo tài khoản thành công (demo, chưa nối API)","Account created (demo, API not connected)","账号创建成功（演示，尚未连接 API）"],
 ["Có lỗi xảy ra, vui lòng thử lại.","Something went wrong, please try again.","出错了，请重试。"],
-["Đăng nhập để vào nhật ký giao dịch.","Log in to open your trading journal.","登录以进入交易日志。"]
+["Đăng nhập để vào nhật ký giao dịch.","Log in to open your trading journal.","登录以进入交易日志。"],
+["Điều khoản đã được cập nhật. Vui lòng đọc và đồng ý lại để tiếp tục.","The terms have been updated. Please read and accept them again to continue.","条款已更新，请阅读并重新同意后继续。"]
 ];
 const LANGS = [["vi","Tiếng Việt"],["en","English"],["zh","中文"]];
 const MAP = new Map(I18N.map(r => [r[0], r]));

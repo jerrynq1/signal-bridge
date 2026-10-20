@@ -7,7 +7,7 @@ Mở web lên là vào **trang chủ** (`index.html`). Đăng nhập bằng Disc
 ## Cấu trúc
 
 ```
-index.html, login.html, register.html   Trang chủ giới thiệu Trading Journal + đăng nhập Discord (register.html chỉ chuyển về login)
+index.html, login.html, register.html, terms.html   Trang chủ giới thiệu Trading Journal + đăng nhập Discord (register.html chỉ chuyển về login)
 app/
   index.html                            App: Journal, Analytic, Flex Card, Kết nối
   css/style.css
@@ -68,6 +68,14 @@ Mục **Kết nối** có nút **Xoá tài khoản** (cuối thẻ). Bấm vào 
 - Chỉ sau khi server xác nhận, trình duyệt mới xoá `tjp_data`, `tjp_sync` của tài khoản này rồi đăng xuất.
 - Lưu ý: nếu người đó vẫn ở trong server Discord, đăng nhập lại sẽ tạo tài khoản mới trống với EA key mới. Muốn chặn hẳn thì admin gỡ role hoặc kick khỏi server. Sau khi xoá, cần gỡ EA khỏi MT5 hoặc đổi lại key để không gửi lỗi 401 liên tục.
 - Cần deploy lại `worker.js`; không cần đổi schema D1.
+
+### Ghi nhận đồng ý Điều khoản
+- `login.html` gửi phiên bản điều khoản đã tích đồng ý lên Worker (`/auth/discord/login?terms=<phiên bản>`); Worker từ chối nếu không khớp `TERMS_VERSION`, rồi ghi `terms_version` + `terms_at` vào bảng `users` và một dòng vào bảng `consents` (lịch sử mỗi lần đồng ý phiên bản mới). Bảng/cột tự tạo khi Worker chạy.
+- Nội dung điều khoản nằm ở **một nơi duy nhất**: `terms.html` (link cố định `/terms.html`, có 3 ngôn ngữ vi/en/zh; `#data` nhảy tới phần dữ liệu). Cửa sổ điều khoản ở `login.html` chỉ nhúng trang này vào, nên không phải sửa hai chỗ. Trang này không nạp Google Fonts. Mục 4 và 5 của điều khoản ghi rõ việc lưu bản ghi đồng ý và các dịch vụ bên thứ ba (Discord, Cloudflare, GitHub Pages, Google Fonts gửi IP sang Google).
+- Khi sửa điều khoản: sửa `terms.html`, rồi đổi `TERMS_VERSION` ở **cả** `worker.js` và `login.html` (cùng giá trị, chỉ gồm chữ số và dấu `-`, ví dụ `2026-10-20-2`); hiển thị phiên bản ở đầu `terms.html` cũng sửa theo. Người dùng cũ sẽ bị đưa về trang đăng nhập để tích đồng ý lại (`/auth/me` trả `terms_ok:false`).
+- Tài khoản tạo trước khi có tính năng này chưa có `terms_version`, nên lần mở app tiếp theo sẽ phải đồng ý một lần.
+- Xoá tài khoản cũng xoá luôn các dòng `consents` của người đó.
+- Xem ai đã đồng ý bản nào: `SELECT user_id, version, datetime(accepted_at/1000,'unixepoch') FROM consents ORDER BY accepted_at DESC;`
 
 ### Xuất / Nhập CSV
 Ở trang Journal: **Xuất CSV** tải toàn bộ lệnh (mọi tài khoản) ra file UTF-8 mở được bằng Excel; **Nhập CSV** đọc lại file đó (tự nhận dấu `,` `;` hoặc tab). Cột bắt buộc: `date` (YYYY-MM-DD), `symbol`, `side` (Long/Short/Buy/Sell), `pnl`. Lệnh trùng `id` bị bỏ qua, dòng sai định dạng bị bỏ qua và được báo lại; tối đa 5 MB / 20.000 dòng. Có bước xem trước và xác nhận trước khi nhập.

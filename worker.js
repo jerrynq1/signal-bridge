@@ -9,7 +9,7 @@
 //                    SESSION_DAYS      (thời hạn phiên đăng nhập, mặc định 7 ngày)
 //
 // Đăng nhập (web):
-//   GET  /auth/discord/login      chuyển sang Discord
+//   GET  /auth/discord/login?terms=<phiên bản>   chuyển sang Discord (bắt buộc đúng TERMS_VERSION, nếu không báo lỗi "terms")
 //   GET  /auth/discord/callback   Discord gọi về; kiểm tra có trong server không, rồi chuyển về web kèm phiên
 //   GET  /auth/me                 thông tin tài khoản + EA key của chính mình       (Authorization: Bearer <phiên>)
 //   POST /auth/regen-key          tạo EA key mới (key cũ ngừng hoạt động); body {"wipe":true} = xoá luôn journal cũ trên server (Authorization: Bearer <phiên>)
@@ -21,6 +21,9 @@
 
 const enc = new TextEncoder();
 const CHECK_MS = 10 * 60 * 1000;
+// Phiên bản Điều khoản hiện hành. Khi sửa nội dung điều khoản: đổi giá trị này VÀ TERMS_VERSION trong login.html
+// -> mọi người dùng cũ sẽ bị yêu cầu đăng nhập lại và tích đồng ý lần nữa.
+const TERMS_VERSION = "2026-10-20-2";
 
 // Giá trị CÔNG KHAI nên để sẵn ở đây cho đỡ phải nhập trên Cloudflare
 const DEFAULTS = {
@@ -104,6 +107,11 @@ async function init(db) {
     open_time INTEGER, close_time INTEGER, open_price REAL, close_price REAL, sl REAL, tp REAL,
     profit REAL, commission REAL, swap REAL, fee REAL, magic INTEGER, comment TEXT, reason TEXT, updated INTEGER, user_id TEXT)`).run();
   try { await db.prepare("ALTER TABLE trades ADD COLUMN user_id TEXT").run(); } catch { /* bảng cũ đã có cột thì bỏ qua */ }
+  // ghi nhận đồng ý điều khoản: phiên bản + thời điểm gần nhất trên users, lịch sử đầy đủ trong consents
+  try { await db.prepare("ALTER TABLE users ADD COLUMN terms_version TEXT").run(); } catch { /* đã có cột */ }
+  try { await db.prepare("ALTER TABLE users ADD COLUMN terms_at INTEGER").run(); } catch { /* đã có cột */ }
+  await db.prepare("CREATE TABLE IF NOT EXISTS consents (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, version TEXT, accepted_at INTEGER)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_consents_user ON consents (user_id, accepted_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_trades_user ON trades (user_id, close_time)").run();
   ready = true;
 }
@@ -139,7 +147,10 @@ async function handle(req, env) {
   const fail = (code) => redirect(`${front}/login.html?error=${code}`, CLEAR);
 
   if (path === "/auth/discord/login" && m === "GET") {
-    const state = hex(16);
+    // trình duyệt phải báo đã đồng ý đúng phiên bản điều khoản hiện hành (checkbox ở login.html); phiên bản đi cùng state để callback ghi lại
+    const terms = url.searchParams.get("terms") || "";
+    if (terms !== TERMS_VERSION) return redirect(`${front}/login.html?error=terms`, CLEAR);
+    const state = hex(16) + "_" + terms;
     const q = new URLSearchParams({
       client_id: env.DISCORD_CLIENT_ID, redirect_uri: CB, response_type: "code",
       scope: "identify guilds.members.read", state,
@@ -152,12 +163,17 @@ async function handle(req, env) {
     const err = url.searchParams.get("error");
     if (err) {
       // lần đầu chưa cấp quyền: thử lại có màn hình xác nhận
-      if (["consent_required", "interaction_required", "login_required"].includes(err)) return redirect(`${url.origin}/auth/discord/login?prompt=consent`, CLEAR);
+      if (["consent_required", "interaction_required", "login_required"].includes(err)) {
+        const c0 = (req.headers.get("Cookie") || "").match(/(?:^|;\s*)gx_state=[a-f0-9]+_([0-9-]+)/);
+        return redirect(`${url.origin}/auth/discord/login?prompt=consent&terms=${encodeURIComponent(c0 ? c0[1] : "")}`, CLEAR);
+      }
       return fail(err === "access_denied" ? "denied" : "discord_error");
     }
-    const cookie = (req.headers.get("Cookie") || "").match(/(?:^|;\s*)gx_state=([a-f0-9]+)/);
+    const cookie = (req.headers.get("Cookie") || "").match(/(?:^|;\s*)gx_state=([a-f0-9]+_[0-9-]+)/);
     const code = url.searchParams.get("code");
     if (!code || !cookie || !safeEq(cookie[1], url.searchParams.get("state"))) return fail("state");
+    const terms = cookie[1].split("_")[1];
+    if (terms !== TERMS_VERSION) return fail("terms");   // điều khoản vừa đổi giữa chừng
 
     const tr = await fetch("https://discord.com/api/v10/oauth2/token", {
       method: "POST",
@@ -177,9 +193,15 @@ async function handle(req, env) {
     if (!rolesOk(env, mem.roles)) return fail("missing_role");
 
     const now = Date.now();
-    await db.prepare(`INSERT INTO users (id,name,avatar,ea_key,created,last_login,checked) VALUES (?,?,?,?,?,?,?)
+    const prev = await db.prepare("SELECT terms_version FROM users WHERE id=?").bind(du.id).first();
+    const st = [db.prepare(`INSERT INTO users (id,name,avatar,ea_key,created,last_login,checked) VALUES (?,?,?,?,?,?,?)
       ON CONFLICT(id) DO UPDATE SET name=excluded.name, avatar=excluded.avatar, last_login=excluded.last_login, checked=excluded.checked`)
-      .bind(du.id, mem.nick || du.global_name || du.username, du.avatar || "", "gx_" + hex(24), now, now, now).run();
+      .bind(du.id, mem.nick || du.global_name || du.username, du.avatar || "", "gx_" + hex(24), now, now, now)];
+    if (!prev || prev.terms_version !== terms) {   // lần đầu, hoặc điều khoản đã đổi phiên bản: ghi lại thời điểm đồng ý
+      st.push(db.prepare("UPDATE users SET terms_version=?, terms_at=? WHERE id=?").bind(terms, now, du.id));
+      st.push(db.prepare("INSERT INTO consents (user_id,version,accepted_at) VALUES (?,?,?)").bind(du.id, terms, now));
+    }
+    await db.batch(st);
     // phiên đi theo URL fragment (#token) nên không bị gửi lên server hay lộ qua Referer
     return redirect(`${front}/app/index.html#token=${await makeSession(env, du.id)}`, CLEAR);
   }
@@ -195,7 +217,7 @@ async function handle(req, env) {
     const a = await webUser();
     if (!a.user) return json({ error: a.err }, 401);
     const u = a.user;
-    return json({ id: u.id, name: u.name, avatar_url: avatarUrl(u), ea_key: u.ea_key });
+    return json({ id: u.id, name: u.name, avatar_url: avatarUrl(u), ea_key: u.ea_key, terms_ok: u.terms_version === TERMS_VERSION, terms_version: u.terms_version || null, terms_at: u.terms_at || null });
   }
 
   if (path === "/auth/regen-key" && m === "POST") {
@@ -225,6 +247,7 @@ async function handle(req, env) {
     await db.batch([
       db.prepare("DELETE FROM trades WHERE user_id=?").bind(uid),
       db.prepare("DELETE FROM quote WHERE k=?").bind("latest:" + uid),
+      db.prepare("DELETE FROM consents WHERE user_id=?").bind(uid),
       db.prepare("DELETE FROM users WHERE id=?").bind(uid),
     ]);
     return json({ ok: true, deleted: true });
