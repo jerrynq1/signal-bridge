@@ -12,9 +12,51 @@ $("cSave").onclick=async()=>{
   catch(e){cMsg("Không kết nối được: "+why(e))}
 };
 $("cNew").onclick=async()=>{
-  if(!confirm("Tạo EA key mới? Key cũ sẽ ngừng hoạt động và bạn phải dán key mới vào EA trên MT5."))return;
-  try{const r=await api("POST","/auth/regen-key");GX.me.ea_key=r.ea_key;fillConn();cMsg("Đã tạo key mới. Nhớ cập nhật vào EA.")}
-  catch(e){cMsg("Lỗi: "+why(e))}
+  const go=await gxDialog({
+    title:"Tạo EA key mới",
+    msg:"Tạo key mới sẽ xoá các lệnh MT5 đã đồng bộ (trên server và trình duyệt này), và key cũ ngừng hoạt động ngay. Bạn phải dán key mới vào EA trên MT5.\n\nXoá sẽ mất dữ liệu cũ, bạn có muốn tải dữ liệu xuống không?",
+    buttons:[
+      {label:"Tải dữ liệu (CSV)",kind:"ghost",keep:true,onClick:b=>{const n=window.JR&&JR.exportCSV?JR.exportCSV():0;b.textContent=n?"Đã tải xuống ✓":"Chưa có dữ liệu để tải"}},
+      {label:"Huỷ",kind:"ghost",value:false,focus:true},
+      {label:"Xoá & tạo key mới",kind:"danger",value:true}]
+  });
+  if(!go){cMsg("Đã huỷ. Key hiện tại vẫn dùng được.");return} // Huỷ / Esc / bấm nền: không đổi gì cả
+  cMsg("Đang tạo key mới...");
+  try{
+    const r=await api("POST","/auth/regen-key",{wipe:true}); // server đổi key và xoá lệnh trong cùng một batch
+    GX.me.ea_key=r.ea_key;fillConn();
+    if(window.JR&&JR.wipeMT5)JR.wipeMT5(); // chỉ xoá phía trình duyệt SAU KHI server đã xác nhận
+    cMsg("Đã xoá dữ liệu cũ và tạo key mới. Nhớ cập nhật key vào EA.");
+  }catch(e){cMsg("Lỗi: "+why(e))}
+};
+$("cDel").onclick=async()=>{
+  // Bước 1: cảnh báo + cho tải dữ liệu về trước
+  const s1=await gxDialog({
+    title:"Xoá tài khoản",
+    msg:"Thao tác này xoá vĩnh viễn tài khoản của bạn và TOÀN BỘ dữ liệu: lệnh MT5 đã đồng bộ, số dư, EA key (trên server), cùng Journal lưu trong trình duyệt này, kể cả lệnh nhập tay.\n\nSau khi xoá, EA trên MT5 sẽ ngừng đồng bộ ngay và không thể khôi phục. Bạn có muốn tải dữ liệu xuống (CSV) trước không?",
+    buttons:[
+      {label:"Tải dữ liệu (CSV)",kind:"ghost",keep:true,onClick:b=>{const n=window.JR&&JR.exportCSV?JR.exportCSV():0;b.textContent=n?"Đã tải xuống ✓":"Chưa có dữ liệu để tải"}},
+      {label:"Huỷ",kind:"ghost",value:false,focus:true},
+      {label:"Tiếp tục",kind:"danger",value:true}]
+  });
+  if(!s1){cMsg("Đã huỷ. Tài khoản vẫn nguyên vẹn.");return}
+  // Bước 2: xác nhận lần cuối
+  const s2=await gxDialog({
+    title:"Xác nhận xoá vĩnh viễn",
+    msg:"Bạn chắc chắn muốn xoá tài khoản? Sau bước này không còn cách lấy lại dữ liệu.\n\nLưu ý: nếu vẫn ở trong server Discord, đăng nhập lại sẽ tạo một tài khoản mới hoàn toàn trống với EA key mới. Muốn mất quyền truy cập hẳn, hãy rời server hoặc nhờ admin gỡ role.",
+    buttons:[
+      {label:"Huỷ",kind:"ghost",value:false,focus:true},
+      {label:"Xoá vĩnh viễn",kind:"danger",value:true}]
+  });
+  if(!s2){cMsg("Đã huỷ. Tài khoản vẫn nguyên vẹn.");return}
+  cMsg("Đang xoá tài khoản...");
+  $("cDel").disabled=true;
+  try{
+    await api("POST","/auth/delete-account",{confirm:true}); // server xoá user + lệnh + số dư trong cùng một batch
+    // chỉ xoá phía trình duyệt SAU KHI server đã xác nhận
+    try{["tjp_data","tjp_sync"].forEach(k=>localStorage.removeItem(GX.key(k)))}catch(e){}
+    GX.logout(); // xoá phiên và về trang đăng nhập
+  }catch(e){$("cDel").disabled=false;cMsg("Lỗi, chưa xoá gì: "+why(e))}
 };
 $("lo").onclick=()=>GX.logout();
 

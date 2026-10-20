@@ -46,7 +46,14 @@ const hdr=()=>{};const refresh=()=>{if(offline()){if(['jr','an','card'].includes
 const money=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:2});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const IDX=['NQ','ES','YM','RTY','NAS100','US30','SPX500'],MET=['GC','SI','HG','PL','XAUUSD','XAGUSD'];
-const market=s=>{s=s.toUpperCase();return IDX.includes(s)?'Chỉ số':MET.includes(s)?'Kim loại':/^[A-Z]{6}$/.test(s)?'Forex':'Khác'};
+// Broker hay thêm hậu tố (XAUUSD+, XAUUSD.a, XAUUSDm, XAUUSD_i...) -> bỏ hậu tố trước khi phân loại
+const IDX_P=['NAS100','US100','USTEC','US30','DJ30','US500','SPX500','GER40','DE40','DAX','UK100','JP225','HK50','AUS200','FRA40','EU50'];
+const MET_P=['XAU','XAG','XPT','XPD','GOLD','SILVER'];
+const baseSym=s=>String(s).toUpperCase().split(/[^A-Z0-9]/)[0];
+const market=s=>{const b=baseSym(s);
+ if(IDX.includes(b)||IDX_P.some(p=>b.startsWith(p)))return 'Chỉ số';
+ if(MET.includes(b)||MET_P.some(p=>b.startsWith(p)))return 'Kim loại';
+ return /^[A-Z]{6}/.test(b)?'Forex':'Khác'};
 const cls=n=>n>0?'win':n<0?'loss':'';
 const PAL=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)'];
 
@@ -195,7 +202,9 @@ function jshow(v){
  if(jr){$('#tbl').style.display=$('#jh').style.display=$('#sybar').style.display=offline()?'none':''}
  if(offline()){if(jr)$('#v-dash').innerHTML=notice();else $('#v-'+v).innerHTML=notice();return}
  if(jr){dash();hover();log()}if(v==='an')an();if(v==='card'){if(!CD.keep)CD.tid=null;CD.keep=0;card()}}
-window.JR={show:jshow,sync:()=>syncMT5(false)};
+window.JR={show:jshow,sync:()=>syncMT5(false),
+ // xoá các lệnh lấy từ MT5 (giữ lệnh nhập tay) rồi đặt lại mốc đồng bộ -- dùng khi tạo key mới + chọn xoá journal cũ
+ wipeMT5:()=>{S.trades=S.trades.filter(t=>!String(t.id).startsWith('mt5-'));SY.since=0;SY.map={};saveSY();save();refresh()}};
 
 const td=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 $('#v-an').onclick=e=>{const m=e.target.dataset.m;if(m){CAL.setMonth(CAL.getMonth()+ +m);an()}};
@@ -456,7 +465,7 @@ async function syncMT5(silent,days){
   }
   const have=new Map(S.trades.map(t=>[String(t.id),t]));let add=0,chg=0;
   rows.forEach(x=>{
-   const k='mt5-'+x.id,sym=String(x.symbol).split('.')[0].toUpperCase();
+   const k='mt5-'+x.id,sym=baseSym(x.symbol)||String(x.symbol).toUpperCase();
    const o={date:ld(x.close_time).slice(0,10),symbol:sym,side:x.side==='buy'?'Long':'Short',
     pnl:+x.net.toFixed(2),fee:+(-(x.commission+x.fee)).toFixed(2),en:x.open_price,ex:x.close_price,
     sl:x.sl>0?x.sl:null,tp:x.tp>0?x.tp:null,time:ld(x.open_time).slice(11,16)};
@@ -492,5 +501,73 @@ setInterval(()=>{
  if(syDirty&&!inForm()){syDirty=false;refresh()}
  syncMT5(true,2);
 },15000);
+
+/* ===== Xuất / Nhập CSV ===== */
+const CSV_H=['id','account','account_id','date','time','symbol','side','pnl','fee','entry','exit','sl','tp','r','risk','rv','rm','setup','emotion','mistake','note'];
+const csvTxt=v=>{v=v==null?'':String(v);return /^[=+\-@\t\r]/.test(v)?"'"+v:v}; // chống CSV injection khi mở bằng Excel
+const csvNum=v=>v==null||v===''||!isFinite(v)?'':String(v);
+const csvCell=v=>{v=String(v);return /[",;\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+const syMsg=t=>{$('#syMsg').textContent=t};
+function exportCSV(){ // tất cả tài khoản; trả về số lệnh đã xuất (0 = không có gì để xuất)
+ if(!S.trades.length)return 0;
+ const an=id=>(S.accounts.find(a=>a.id===id)||{}).name||id;
+ const rows=[...S.trades].sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+ const out=[CSV_H.join(',')];
+ rows.forEach(t=>out.push([csvTxt(t.id),csvTxt(an(t.acc)),csvTxt(t.acc),t.date,t.time||'',csvTxt(t.symbol),t.side,csvNum(t.pnl),csvNum(t.fee),csvNum(t.en),csvNum(t.ex),csvNum(t.sl),csvNum(t.tp),csvNum(t.r),csvNum(t.risk),csvNum(t.rv),csvTxt(t.rm),csvTxt(t.setup),csvTxt(t.emo),csvTxt(t.mis),csvTxt(t.note)].map(csvCell).join(',')));
+ saveBlob(new Blob(['\ufeff'+out.join('\r\n')],{type:'text/csv;charset=utf-8'}),'gexadecimal-journal-'+td()+'.csv');
+ return rows.length;
+}
+function parseCSV(text){ // tự nhận dấu phân cách , ; hoặc tab; hỗ trợ ô có ngoặc kép, xuống dòng trong ô
+ text=text.replace(/^\ufeff/,'');
+ const first=text.split(/\r?\n/,1)[0],d=[',',';','\t'].map(c=>[c,first.split(c).length]).sort((a,b)=>b[1]-a[1])[0][0];
+ const rows=[];let row=[],cur='',q=false;
+ const push=()=>{row.push(cur);cur='';if(row.length>1||row[0]!=='')rows.push(row);row=[]};
+ for(let i=0;i<text.length;i++){const c=text[i];
+  if(q){if(c==='"'){if(text[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}
+  else if(c==='"')q=true;
+  else if(c===d){row.push(cur);cur=''}
+  else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;push()}
+  else cur+=c}
+ if(cur!==''||row.length)push();
+ return rows;
+}
+async function importCSV(file){
+ const T='Nhập CSV',okb=[{label:'OK',value:true}],say=m=>gxDialog({title:T,msg:m,buttons:okb});
+ if(file.size>5*1024*1024)return say('File quá lớn (tối đa 5 MB).');
+ let rows=[];try{rows=parseCSV(await file.text())}catch(e){}
+ if(rows.length<2)return say('File CSV trống hoặc không đọc được.');
+ if(rows.length>20001)return say('File có quá nhiều dòng (tối đa 20.000).');
+ const hd=rows[0].map(h=>h.trim().toLowerCase().replace(/^\ufeff/,''));
+ if(['date','symbol','side','pnl'].some(c=>!hd.includes(c)))return say('File không đúng định dạng. Cần các cột date, symbol, side, pnl (dùng file do nút Xuất CSV tạo ra).');
+ const g=(r,n)=>{const i=hd.indexOf(n);return i<0?'':String(r[i]==null?'':r[i]).trim()};
+ const txt=(v,n)=>v.replace(/^'(?=[=+\-@\t\r])/,'').slice(0,n||500);
+ const num=v=>{if(v==='')return null;if(/^-?\d+,\d+$/.test(v))v=v.replace(',','.');const x=Number(v);return isFinite(x)?x:NaN};
+ const have=new Set(S.trades.map(t=>String(t.id))),add=[];let dup=0,bad=0,n=0;
+ const tag=Date.now().toString(36);
+ for(const r of rows.slice(1)){
+  const date=g(r,'date'),symbol=txt(g(r,'symbol'),30).toUpperCase(),sv=g(r,'side').toLowerCase(),pnl=num(g(r,'pnl'));
+  const side=/^(l|buy)/.test(sv)?'Long':/^(s|sell)/.test(sv)?'Short':'';
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||isNaN(new Date(date+'T00:00').getTime())||!symbol||!side||pnl==null||isNaN(pnl)){bad++;continue}
+  const id=txt(g(r,'id'),120)||'imp-'+tag+'-'+(n++);
+  if(have.has(id)){dup++;continue}
+  have.add(id);
+  const an=g(r,'account'),ai=g(r,'account_id'),acc=(S.accounts.find(a=>ai&&a.id===ai)||S.accounts.find(a=>an&&a.name.toLowerCase()===an.toLowerCase())||{id:A0()}).id;
+  const nn=k=>{const x=num(g(r,k));return x==null||isNaN(x)?null:x},pos=k=>{const x=nn(k);return x>0?x:null};
+  add.push({id,acc,date,time:/^\d{2}:\d{2}$/.test(g(r,'time'))?g(r,'time'):'',symbol,side,pnl,fee:nn('fee')||0,en:nn('entry'),ex:nn('exit'),sl:pos('sl'),tp:pos('tp'),
+   setup:txt(g(r,'setup'),60)||'CSV',risk:nn('risk'),rv:nn('rv'),rm:txt(g(r,'rm'),20)||null,r:nn('r'),emo:txt(g(r,'emotion'),60),mis:txt(g(r,'mistake'),60),note:txt(g(r,'note'))});
+ }
+ if(!add.length)return say(`Không có lệnh hợp lệ để nhập (${dup} trùng, ${bad} dòng lỗi).`);
+ const go=await gxDialog({title:T,msg:`Sẽ nhập ${add.length} lệnh mới (bỏ qua ${dup} lệnh trùng, ${bad} dòng lỗi). Tiếp tục?`,
+  buttons:[{label:'Huỷ',kind:'ghost',value:false,focus:true},{label:'Nhập',value:true}]});
+ if(!go)return;
+ S.trades.push(...add);
+ add.forEach(t=>{if(t.setup&&!S.setups.includes(t.setup))S.setups.push(t.setup)});
+ save();refresh();
+ syMsg(`Đã nhập ${add.length} lệnh từ CSV.`);
+}
+$('#sye').onclick=()=>{const n=exportCSV();syMsg(n?`Đã xuất ${n} lệnh ra file CSV.`:'Chưa có dữ liệu để xuất.')};
+$('#syi').onclick=()=>$('#syf').click();
+$('#syf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)importCSV(f)};
+Object.assign(window.JR,{exportCSV});
 
 })();

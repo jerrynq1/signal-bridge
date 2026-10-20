@@ -4,6 +4,36 @@ const LANGS=[["vi","Tiếng Việt"],["en","English"],["zh","中文"]];
 
 /* [vi, en, zh] */
 const T=[
+/* --- Hộp thoại, Xuất/Nhập CSV --- */
+["Nhập CSV","Import CSV","导入 CSV"],
+["Nhập","Import","导入"],
+["OK","OK","确定"],
+["Tạo EA key mới","Generate new EA key","生成新的 EA key"],
+["Tạo key mới sẽ xoá các lệnh MT5 đã đồng bộ (trên server và trình duyệt này), và key cũ ngừng hoạt động ngay. Bạn phải dán key mới vào EA trên MT5.","Generating a new key deletes the MT5 trades already synced (on the server and in this browser), and the old key stops working immediately. You will need to paste the new key into the EA on MT5.","生成新 key 会删除已同步的 MT5 订单（服务器和此浏览器中），旧 key 将立即失效。您需要把新 key 粘贴到 MT5 的 EA 中。"],
+["Xoá sẽ mất dữ liệu cũ, bạn có muốn tải dữ liệu xuống không?","Deleting will erase your old data. Do you want to download it first?","删除后旧数据将丢失，是否先下载数据？"],
+["Tải dữ liệu (CSV)","Download data (CSV)","下载数据 (CSV)"],
+["Đã tải xuống ✓","Downloaded ✓","已下载 ✓"],
+["Chưa có dữ liệu để tải","No data to download","没有可下载的数据"],
+["Xoá & tạo key mới","Delete & create new key","删除并生成新 key"],
+["Xoá tài khoản","Delete account","删除账号"],
+["Xoá vĩnh viễn tài khoản và toàn bộ dữ liệu của bạn (lệnh đã đồng bộ, số dư, EA key) trên server và trong trình duyệt này. Không thể khôi phục.","Permanently delete your account and all your data (synced trades, balance, EA key) on the server and in this browser. This cannot be undone.","永久删除你的账号及全部数据（已同步的订单、余额、EA key），包括服务器和此浏览器中的数据，且无法恢复。"],
+["Thao tác này xoá vĩnh viễn tài khoản của bạn và TOÀN BỘ dữ liệu: lệnh MT5 đã đồng bộ, số dư, EA key (trên server), cùng Journal lưu trong trình duyệt này, kể cả lệnh nhập tay.","This permanently deletes your account and ALL your data: synced MT5 trades, balance, EA key (on the server), and the Journal stored in this browser, including manually entered trades.","此操作将永久删除你的账号和全部数据：已同步的 MT5 订单、余额、EA key（服务器上），以及此浏览器中的日志，包括手动录入的订单。"],
+["Sau khi xoá, EA trên MT5 sẽ ngừng đồng bộ ngay và không thể khôi phục. Bạn có muốn tải dữ liệu xuống (CSV) trước không?","After deletion, the EA on MT5 stops syncing immediately and nothing can be recovered. Do you want to download your data (CSV) first?","删除后，MT5 上的 EA 会立即停止同步，且无法恢复。是否先下载数据（CSV）？"],
+["Tiếp tục","Continue","继续"],
+["Đã huỷ. Tài khoản vẫn nguyên vẹn.","Cancelled. Your account is untouched.","已取消，账号保持不变。"],
+["Xác nhận xoá vĩnh viễn","Confirm permanent deletion","确认永久删除"],
+["Bạn chắc chắn muốn xoá tài khoản? Sau bước này không còn cách lấy lại dữ liệu.","Are you sure you want to delete your account? After this step your data cannot be recovered.","确定要删除账号吗？此步骤之后将无法找回数据。"],
+["Lưu ý: nếu vẫn ở trong server Discord, đăng nhập lại sẽ tạo một tài khoản mới hoàn toàn trống với EA key mới. Muốn mất quyền truy cập hẳn, hãy rời server hoặc nhờ admin gỡ role.","Note: if you are still in the Discord server, logging in again creates a brand-new empty account with a new EA key. To lose access entirely, leave the server or ask an admin to remove your role.","注意：如果你仍在 Discord 服务器中，重新登录会创建一个全新的空账号和新的 EA key。若要彻底失去访问权限，请退出服务器或请管理员移除你的角色。"],
+["Xoá vĩnh viễn","Delete permanently","永久删除"],
+["Đang xoá tài khoản...","Deleting account...","正在删除账号..."],
+["Đã huỷ. Key hiện tại vẫn dùng được.","Cancelled. Your current key still works.","已取消，当前 key 仍可使用。"],
+["Đang tạo key mới...","Creating new key...","正在生成新 key…"],
+["Đã xoá dữ liệu cũ và tạo key mới. Nhớ cập nhật key vào EA.","Old data deleted and new key created. Remember to update the key in the EA.","已删除旧数据并生成新 key，请记得更新到 EA。"],
+["File quá lớn (tối đa 5 MB).","File is too large (5 MB max).","文件过大（最大 5 MB）。"],
+["File CSV trống hoặc không đọc được.","The CSV file is empty or can't be read.","CSV 文件为空或无法读取。"],
+["File có quá nhiều dòng (tối đa 20.000).","The file has too many rows (20,000 max).","文件行数过多（最多 20,000 行）。"],
+["File không đúng định dạng. Cần các cột date, symbol, side, pnl (dùng file do nút Xuất CSV tạo ra).","Invalid file format. The columns date, symbol, side and pnl are required (use a file created by the Export CSV button).","文件格式不正确。必须包含 date、symbol、side、pnl 列（请使用“导出 CSV”生成的文件）。"],
+["Chưa có dữ liệu để xuất.","No data to export.","没有可导出的数据。"],
 /* --- Thanh bên, chung --- */
 ["Thu gọn thanh bên","Collapse sidebar","收起侧边栏"],
 ["Menu","Menu","菜单"],
@@ -382,7 +412,12 @@ const PARTS=[
 
 /* [regex vi, mẫu en, mẫu zh] — mẫu là chuỗi có $1.. hoặc hàm(m) */
 const RULES=[
+  [/^Sẽ nhập (\d+) lệnh mới \(bỏ qua (\d+) lệnh trùng, (\d+) dòng lỗi\)\. Tiếp tục\?$/,"$1 new trades will be imported ($2 duplicates skipped, $3 invalid rows). Continue?","将导入 $1 笔新订单（跳过 $2 笔重复，$3 行无效）。是否继续？"],
+  [/^Không có lệnh hợp lệ để nhập \((\d+) trùng, (\d+) dòng lỗi\)\.$/,"No valid trades to import ($1 duplicates, $2 invalid rows).","没有可导入的有效订单（$1 笔重复，$2 行无效）。"],
+  [/^Đã nhập (\d+) lệnh từ CSV\.$/,"Imported $1 trades from CSV.","已从 CSV 导入 $1 笔订单。"],
+  [/^Đã xuất (\d+) lệnh ra file CSV\.$/,"Exported $1 trades to a CSV file.","已导出 $1 笔订单到 CSV 文件。"],
   [/^Lỗi: (.*)$/,"Error: $1","错误：$1"],
+[/^Lỗi, chưa xoá gì: (.*)$/,"Error, nothing was deleted: $1","出错，未删除任何内容：$1"],
   [/^Thua: (\d+) \((\d+)%\)$/,"Loss: $1 ($2%)","亏损：$1（$2%）"],
   [/^(Thắng|Thua|Hoà|Chỉ số|Kim loại|Forex|Khác): (\d+) \((\d+)%\)$/,"$1: $2 ($3%)","$1：$2（$3%）"],
   [/^Không kết nối được: (.*)$/,"Could not connect: $1","无法连接：$1"],
