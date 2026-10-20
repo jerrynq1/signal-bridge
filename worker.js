@@ -12,7 +12,8 @@
 //   GET  /auth/discord/login      chuyển sang Discord
 //   GET  /auth/discord/callback   Discord gọi về; kiểm tra có trong server không, rồi chuyển về web kèm phiên
 //   GET  /auth/me                 thông tin tài khoản + EA key của chính mình       (Authorization: Bearer <phiên>)
-//   POST /auth/regen-key          tạo EA key mới (key cũ ngừng hoạt động)           (Authorization: Bearer <phiên>)
+//   POST /auth/regen-key          tạo EA key mới (key cũ ngừng hoạt động); body {"wipe":true} = xoá luôn journal cũ trên server (Authorization: Bearer <phiên>)
+//   POST /auth/delete-account    xoá HẲN tài khoản + toàn bộ dữ liệu trên server; body {"confirm":true} bắt buộc (Authorization: Bearer <phiên>)
 // Journal (web, cần phiên):
 //   GET  /api/health | /api/trades?since=<ms>&limit=500 | /api/quote
 // EA MT5 (dùng EA key riêng của từng người trong header X-Token):
@@ -200,9 +201,33 @@ async function handle(req, env) {
   if (path === "/auth/regen-key" && m === "POST") {
     const a = await webUser();
     if (!a.user) return json({ error: a.err }, 401);
+    let wipe = false;
+    try { wipe = (await req.json()).wipe === true; } catch { /* không có body = chỉ đổi key */ }
     const key = "gx_" + hex(24);
-    await db.prepare("UPDATE users SET ea_key=? WHERE id=?").bind(key, a.user.id).run();
-    return json({ ea_key: key });
+    const uid = a.user.id;
+    const st = [db.prepare("UPDATE users SET ea_key=? WHERE id=?").bind(key, uid)];
+    if (wipe) {   // xoá lệnh + số dư đã lưu của CHÍNH người này; chung 1 batch với việc đổi key nên hoặc cả hai cùng xong, hoặc không gì thay đổi
+      st.push(db.prepare("DELETE FROM trades WHERE user_id=?").bind(uid));
+      st.push(db.prepare("DELETE FROM quote WHERE k=?").bind("latest:" + uid));
+    }
+    await db.batch(st);
+    return json({ ea_key: key, wiped: wipe });
+  }
+
+  if (path === "/auth/delete-account" && m === "POST") {
+    const a = await webUser();
+    if (!a.user) return json({ error: a.err }, 401);
+    let ok = false;
+    try { ok = (await req.json()).confirm === true; } catch { /* không có body hợp lệ = không xoá */ }
+    if (!ok) return json({ error: "thiếu xác nhận xoá" }, 400);   // chặn gọi nhầm: bắt buộc {"confirm":true}
+    const uid = a.user.id;
+    // một batch D1: hoặc xoá hết, hoặc không xoá gì. Xoá user cuối cùng nên EA key và phiên cũ vô hiệu ngay (webUser không tìm thấy user nữa)
+    await db.batch([
+      db.prepare("DELETE FROM trades WHERE user_id=?").bind(uid),
+      db.prepare("DELETE FROM quote WHERE k=?").bind("latest:" + uid),
+      db.prepare("DELETE FROM users WHERE id=?").bind(uid),
+    ]);
+    return json({ ok: true, deleted: true });
   }
 
   // ================= EA MT5 (EA key riêng của từng người) =================

@@ -15,6 +15,7 @@ app/
   js/auth.js                            Phiên đăng nhập Discord, chặn khi chưa đăng nhập, đăng xuất
   js/core.js                            Tiện ích, trạng thái kết nối
   js/api.js                             Gọi API Cloudflare Worker (kèm phiên đăng nhập)
+  js/dialog.js                          Hộp thoại riêng của app (gxDialog) thay confirm/alert của trình duyệt
   js/connection-ui.js                   Sidebar, theme, trang Kết nối, nền sao
   js/journal-flexcard-sync.js           Journal, Analytic, Flex Card, đồng bộ MT5 (một khối)
   js/init.js                            Khởi động, mở Journal mặc định
@@ -57,7 +58,19 @@ Sửa `app/js/config.js`: đặt `API_URL` là URL Worker (không có `/` cuối
 2. Vào mục **Kết nối**, copy **API URL** và **EA key** của riêng mình.
 3. Biên dịch `SignalBridge Journal.mq5`, thêm URL Worker vào *Tools > Options > Expert Advisors > Allow WebRequest*, nhập `InpApiUrl` và `InpToken` (= EA key). Journal tự đồng bộ lệnh đã đóng mỗi 15 giây.
 
-EA key là bí mật của từng người; lộ key thì bấm **Tạo key mới** ở mục Kết nối (key cũ ngừng hoạt động ngay).
+EA key là bí mật của từng người; lộ key thì bấm **Tạo key mới** ở mục Kết nối. Hộp thoại sẽ hỏi có muốn tải dữ liệu cũ xuống (CSV) không:
+- **Xoá & tạo key mới**: key cũ ngừng hoạt động ngay, đồng thời xoá các lệnh MT5 đã đồng bộ (trên server và trình duyệt này). Đổi key và xoá chạy chung một batch D1 nên không bị nửa vời.
+- **Huỷ** (hoặc Esc / bấm ra ngoài): không làm gì, key cũ vẫn dùng được.
+
+### Xoá tài khoản
+Mục **Kết nối** có nút **Xoá tài khoản** (cuối thẻ). Bấm vào sẽ hiện hai bước xác nhận, bước đầu có nút tải CSV để giữ lại dữ liệu:
+- Worker `POST /auth/delete-account` (bắt buộc body `{"confirm":true}`) xoá `trades`, `quote` và `users` của chính người đó trong **một batch D1**, nên không bị xoá nửa vời. EA key và phiên cũ vô hiệu ngay.
+- Chỉ sau khi server xác nhận, trình duyệt mới xoá `tjp_data`, `tjp_sync` của tài khoản này rồi đăng xuất.
+- Lưu ý: nếu người đó vẫn ở trong server Discord, đăng nhập lại sẽ tạo tài khoản mới trống với EA key mới. Muốn chặn hẳn thì admin gỡ role hoặc kick khỏi server. Sau khi xoá, cần gỡ EA khỏi MT5 hoặc đổi lại key để không gửi lỗi 401 liên tục.
+- Cần deploy lại `worker.js`; không cần đổi schema D1.
+
+### Xuất / Nhập CSV
+Ở trang Journal: **Xuất CSV** tải toàn bộ lệnh (mọi tài khoản) ra file UTF-8 mở được bằng Excel; **Nhập CSV** đọc lại file đó (tự nhận dấu `,` `;` hoặc tab). Cột bắt buộc: `date` (YYYY-MM-DD), `symbol`, `side` (Long/Short/Buy/Sell), `pnl`. Lệnh trùng `id` bị bỏ qua, dòng sai định dạng bị bỏ qua và được báo lại; tối đa 5 MB / 20.000 dòng. Có bước xem trước và xác nhận trước khi nhập.
 
 ### API của Worker
 - Đăng nhập: `GET /auth/discord/login`, `GET /auth/discord/callback`, `GET /auth/me`, `POST /auth/regen-key`
