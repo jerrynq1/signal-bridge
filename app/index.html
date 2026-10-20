@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Unbounded:wght@800&family=Sora:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=10">
+<link rel="stylesheet" href="css/style.css?v=12">
 </head>
 <body class="nt">
 <canvas id="sky"></canvas>
@@ -22,7 +22,7 @@
 <div class="wrap">
 
 <section class="view jr on" id="v-jr">
-<div class="row" id="sybar" style="margin-bottom:14px;align-items:center"><button class="btn ghost" id="syb" type="button">Sync từ MT5</button><button class="btn ghost" id="syr" type="button">Tải lại từ đầu</button><span id="syMsg" style="color:var(--mut);font-size:13px"></span></div>
+<div class="row" id="sybar" style="margin-bottom:14px;align-items:center"><button class="btn ghost" id="syb" type="button">Sync từ MT5</button><button class="btn ghost" id="syr" type="button">Tải lại từ đầu</button><button class="btn ghost" id="sye" type="button">Xuất CSV</button><button class="btn ghost" id="syi" type="button">Nhập CSV</button><input type="file" id="syf" accept=".csv,text/csv" hidden><span id="syMsg" style="color:var(--mut);font-size:13px"></span></div>
 <div id="v-dash"></div>
 <h2 id="jh" style="margin:18px 0 0">Lịch sử lệnh</h2>
 <div class="card tw" id="tbl"></div>
@@ -38,20 +38,26 @@
     <label class="msg" for="cTok" style="display:block;margin-top:10px">EA key (InpToken)</label>
     <div class="kv"><input id="cTok" type="password" readonly autocomplete="off"><button class="btn ghost" id="cShow" type="button">Hiện</button><button class="btn ghost" id="cCopyKey" type="button">Sao chép</button></div>
     <div class="bar" style="margin-top:14px"><button class="btn" id="cSave" type="button">Kiểm tra kết nối</button><button class="btn ghost" id="cNew" type="button">Tạo key mới</button><span class="msg" id="cMsg"></span></div>
+    <div style="margin-top:22px;padding-top:14px;border-top:1px solid var(--line,rgba(128,128,128,.25))">
+      <h2 style="font-size:1rem;margin:0 0 6px">Xoá tài khoản</h2>
+      <p class="msg" style="margin:0 0 10px">Xoá vĩnh viễn tài khoản và toàn bộ dữ liệu của bạn (lệnh đã đồng bộ, số dư, EA key) trên server và trong trình duyệt này. Không thể khôi phục.</p>
+      <button class="btn danger" id="cDel" type="button">Xoá tài khoản</button>
+    </div>
   </div>
 </section>
 
 </div></div>
 
 
-<script src="js/config.js?v=10"></script>
-<script src="js/auth.js?v=10"></script>
-<script src="js/core.js?v=10"></script>
-<script src="js/api.js?v=10"></script>
-<script src="js/connection-ui.js?v=10"></script>
-<script src="js/journal-flexcard-sync.js?v=10"></script>
-<script src="js/init.js?v=10"></script>
-<script src="js/i18n-data.js?v=10"></script>
-<script src="js/i18n.js?v=10"></script>
+<script src="js/config.js?v=12"></script>
+<script src="js/auth.js?v=12"></script>
+<script src="js/core.js?v=12"></script>
+<script src="js/dialog.js?v=12"></script>
+<script src="js/api.js?v=12"></script>
+<script src="js/connection-ui.js?v=12"></script>
+<script src="js/journal-flexcard-sync.js?v=12"></script>
+<script src="js/init.js?v=12"></script>
+<script src="js/i18n-data.js?v=12"></script>
+<script src="js/i18n.js?v=12"></script>
 </body>
 </html>
