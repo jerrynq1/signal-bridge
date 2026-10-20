@@ -173,3 +173,17 @@ body.sc .usr .lb{display:none}
 .kv{display:flex;gap:8px;align-items:center;margin-top:4px}
 .kv input{flex:1;min-width:0}
 .kv .btn{flex:none}
+
+/* Hộp thoại riêng (dialog.js) */
+.gxo{position:fixed;inset:0;z-index:99999;background:rgba(0,0,10,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;animation:gxf .15s ease-out}
+.gxd{max-width:460px;width:100%;background:var(--hole);color:var(--ink);animation:gxu .18s ease-out}
+.gxd h2{margin:0 0 10px}
+.gxd p{margin:0 0 10px;line-height:1.55;color:var(--ink)}
+.gxd p+p{color:var(--mut)}
+.gxb{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.btn.danger{background:var(--loss);background-image:none;color:#fff;box-shadow:0 0 18px rgba(255,80,100,.3)}
+.btn.danger:hover{box-shadow:0 0 28px rgba(255,80,100,.55)}
+@keyframes gxf{from{opacity:0}to{opacity:1}}
+@keyframes gxu{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.gxo,.gxd{animation:none}}
+@media (max-width:480px){.gxb .btn{flex:1 1 100%}}
