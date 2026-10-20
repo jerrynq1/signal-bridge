@@ -366,9 +366,6 @@ function drawCard(c,v,d,sc){
   c.letterSpacing='0px';c.restore();return}
  if(OPT.logo)drawBrand(c,PL,lt,false,{hy:68,tf:30,rf:24});
  if(OPT.range)f(`500 22px ${SG}`,PL.mut,'right',CW-64,84,(d.one?d.f:d.f+' → '+d.t));
- const bx=CW-112,by=176;
- c.save();c.strokeStyle=PL.mut;c.globalAlpha=.5;c.lineWidth=1.5;c.beginPath();c.arc(bx,by,56,0,6.283);c.stroke();c.setLineDash([2,7]);c.beginPath();c.arc(bx,by,46,0,6.283);c.stroke();c.restore();
- planetIco(c,bx,by,19,lt);
  const LS=isLS(),dy=CH-756;
  if(OPT.pnl){
   f(`600 20px ${SG}`,PL.mut,'left',64,236+dy,'NET P&L','5px');
