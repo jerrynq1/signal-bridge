@@ -302,16 +302,17 @@ function bgOf(v,sc){const k=v+CF+sc;if(sc<=1&&BG[k])return BG[k];
  const cv=document.createElement('canvas');cv.width=Math.round(CW*sc);cv.height=Math.round(CH*sc);const c=cv.getContext('2d');c.scale(sc,sc);
  BGF[v](c,mkRng(v.length*7919+v.charCodeAt(0)*31));
  return sc<=1?(BG[k]=cv):cv}
-Object.assign(EN,{'Khung hình':'Aspect ratio','Ngang (mặc định)':'Landscape (default)','Vuông 1:1':'Square 1:1','Dọc 4:5':'Portrait 4:5','Story 9:16':'Story 9:16','Tài khoản hiển thị':'Accounts shown','Tất cả (gộp tổng)':'All (combined total)','Nội dung trên thẻ':'Show on card','Logo & tiêu đề':'Logo & title','Khoảng ngày':'Date range','Hiện tên tài khoản':'Account name','Số lệnh':'Trades','Tên trader':'Trader name'});
-const COPT=[['pnl','Net P&L'],['acc','Hiện tên tài khoản'],['wr','Win rate'],['pf','Profit factor'],['avgR','Average R']];
-const OPT=Object.assign({pnl:1,acc:1,wr:1,pf:1,avgR:1},P.copt||{},{logo:1,range:1,n:1,name:1});
+Object.assign(EN,{'Khung hình':'Aspect ratio','Ngang (mặc định)':'Landscape (default)','Vuông 1:1':'Square 1:1','Dọc 4:5':'Portrait 4:5','Story 9:16':'Story 9:16','Nội dung trên thẻ':'Show on card','Logo & tiêu đề':'Logo & title','Khoảng ngày':'Date range','Số lệnh':'Trades','Tên trader':'Trader name'});
+const COPT=[['pnl','Net P&L'],['wr','Win rate'],['pf','Profit factor'],['avgR','Average R']];
+// Brand cleanup: account scope follows the existing journal selector; never show account names on share cards.
+const OPT=Object.assign({pnl:1,wr:1,pf:1,avgR:1},P.copt||{},{logo:1,range:1,n:1,name:1,acc:0});
 const CD={from:'',to:'',accs:null,mode:'usd',v:P.cv&&BGF[P.cv]?P.cv:'hole',name:P.cname||'',sc:null};
 const selAccs=()=>{const ids=S.accounts.map(a=>a.id),a=(CD.accs||[]).filter(x=>ids.includes(x));return a.length?a:ids};
 function cData(){
  const ids=selAccs(),sa=S.accounts.filter(a=>ids.includes(a.id)),all=S.trades.filter(t=>ids.includes(t.acc)),ds=all.map(t=>t.date).sort(),mn=ds[0]||td(),mx=ds[ds.length-1]||td(),F=CD.from||mn,T=CD.to||mx,f=F<=T?F:T,t=F<=T?T:F;
  const one=CD.tid?S.trades.find(x=>String(x.id)===String(CD.tid)):null,ts=one?[one]:all.filter(x=>x.date>=f&&x.date<=t),s=stats(ts);
  const oa=one?(S.accounts.find(a=>a.id===one.acc)||{}):null;
- return{f:one?one.date:f,t:one?one.date:t,one,s,sc:one?(oa.name||'')+' · '+one.side.toUpperCase():(S.accounts.length>1&&sa.length===S.accounts.length)?tr('Tất cả tài khoản'):sa.map(a=>a.name).join(' + '),bal:one?(oa.balance||0):sa.reduce((q,a)=>q+a.balance,0),rsum:ts.filter(x=>x.r!==null&&!isNaN(x.r)).reduce((q,x)=>q+x.r,0)}}
+ return{f:one?one.date:f,t:one?one.date:t,one,s,sc:'',bal:one?(oa.balance||0):sa.reduce((q,a)=>q+a.balance,0),rsum:ts.filter(x=>x.r!==null&&!isNaN(x.r)).reduce((q,x)=>q+x.r,0)}}
 function pnlTxt(d){const s=d.s,sg=v=>v>=0?'+':'-';
  if(CD.mode==='pct')return d.bal>0?sg(s.net)+Math.abs(s.net/d.bal*100).toFixed(2)+'%':'—';
  if(CD.mode==='r')return sg(d.rsum)+Math.abs(d.rsum).toFixed(2)+'R';
@@ -319,6 +320,23 @@ function pnlTxt(d){const s=d.s,sg=v=>v>=0?'+':'-';
 function statItems(d){const s=d.s,o=d.one;
  if(o){const n=v=>v==null?'–':v;return [['wr','SYMBOL',o.symbol],['pf','R',o.r==null||isNaN(o.r)?'–':o.r+'R'],['n','ENTRY',String(n(o.en))],['avgR','EXIT',String(n(o.ex))]].filter(x=>OPT[x[0]])}
  return [['wr','WIN RATE',s.wr.toFixed(1)+'%'],['pf','PROFIT FACTOR',s.pf===Infinity?'∞':s.pf.toFixed(2)],['n','TRADES',String(s.n)],['avgR','AVERAGE R',s.avgR===null?'–':s.avgR.toFixed(2)+'R']].filter(x=>OPT[x[0]])}
+const BRAND_LOGO=new Image();
+let brandLogoReady=false;
+const brandLogoPromise=new Promise(resolve=>{
+ BRAND_LOGO.onload=()=>{brandLogoReady=true;resolve(true)};
+ BRAND_LOGO.onerror=()=>resolve(false);
+ BRAND_LOGO.src='img/logo.png';
+ if(BRAND_LOGO.complete&&BRAND_LOGO.naturalWidth){brandLogoReady=true;resolve(true)}
+});
+function drawBrand(c,PL,lt,vertical,p){
+ const x=64, y=vertical?Math.max(30,p.hy-p.tf*1.05):42;
+ const h=vertical?Math.min(48,Math.max(36,p.tf*1.05)):36, w=h*101/128;
+ if(brandLogoReady){c.save();c.shadowColor=lt?'rgba(176,116,26,.22)':'rgba(255,190,60,.42)';c.shadowBlur=vertical?15:12;c.drawImage(BRAND_LOGO,x,y,w,h);c.restore()}
+ const tx=x+w+14, base=vertical?p.hy:68, fs=vertical?Math.min(p.tf,46):30;
+ c.save();c.shadowColor=lt?'rgba(176,116,26,.18)':'rgba(120,95,255,.22)';c.shadowBlur=vertical?8:6;
+ c.font=`800 ${fs}px Orbitron, "Space Grotesk", sans-serif`;c.fillStyle=PL.ink;c.textAlign='left';c.letterSpacing=vertical?'1.5px':'1.1px';c.fillText('GEXADECIMAL',tx,base);
+ c.shadowBlur=0;c.font=`600 ${vertical?Math.max(12,Math.round(p.rf*.48)):12}px "Space Grotesk", sans-serif`;c.fillStyle=PL.mut;c.letterSpacing=vertical?'3px':'2.6px';c.fillText('TRADING JOURNAL',tx,base+(vertical?Math.max(19,p.rf*.68):20));c.restore();
+}
 function drawCard(c,v,d,sc){
  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,c.canvas.width,c.canvas.height);c.save();c.scale(sc,sc);
  const lt=v==='eclipse',PL=lt?{ink:'#1a1f45',mut:'#5d6597',win:'#08987a',loss:'#d6336c',ln:'rgba(80,70,200,.25)'}:{ink:'#f2f4ff',mut:'rgba(196,204,255,.75)',win:'#3df5c0',loss:'#ff5c8a',ln:'rgba(180,190,255,.22)'};
@@ -333,7 +351,7 @@ function drawCard(c,v,d,sc){
  const s=d.s,SG='"Space Grotesk",system-ui,sans-serif',OR='Orbitron,"Space Grotesk",sans-serif';
  const f=(font,col,al,x,y,t,ls)=>{c.font=font;c.fillStyle=col;c.textAlign=al;c.letterSpacing=ls||'0px';c.fillText(t,x,y)};
  if(!isLS()){const p=LY(),y0=p.y0;
-  if(OPT.logo){const R=Math.round(p.tf*.5);planetIco(c,96,p.hy-Math.round(p.tf*.36),R,lt);f(`800 ${p.tf}px ${OR}`,PL.ink,'left',96+Math.round(R*2.5),p.hy,'TRADING JOURNAL','1px')}
+  if(OPT.logo)drawBrand(c,PL,lt,true,p);
   if(OPT.range)f(`500 ${p.rf}px ${SG}`,PL.mut,'left',96+Math.round(p.tf*1.25),p.hy+Math.round(p.rf*1.7),(d.one?d.f:d.f+' → '+d.t));
   const bigAcc=!OPT.pnl;
   if(OPT.pnl){
@@ -341,17 +359,12 @@ function drawCard(c,v,d,sc){
    const txt=pnlTxt(d),pos=(CD.mode==='pct'?s.net:CD.mode==='r'?d.rsum:s.net)>=0,col=pos?PL.win:PL.loss,mx=CW-128;
    let fs=p.F;c.font=`800 ${fs}px ${OR}`;c.letterSpacing='0px';const w=c.measureText(txt).width;if(w>mx)fs=Math.floor(fs*mx/w);
    c.shadowColor=col;c.shadowBlur=lt?0:34;f(`800 ${fs}px ${OR}`,col,'left',60,y0+p.pb,txt);c.shadowBlur=0}
-  if(OPT.acc){
-   const af=bigAcc?Math.round(p.af*1.5):p.af,wt=bigAcc?700:500,ay=y0+(bigAcc?p.pb:p.ab),mw=CW-128;let at=d.sc;
-   c.font=`${wt} ${af}px ${SG}`;c.letterSpacing='0px';
-   if(c.measureText(at).width>mw){while(at.length>1&&c.measureText(at+'…').width>mw)at=at.slice(0,-1);at+='…'}
-   f(`${wt} ${af}px ${SG}`,PL.ink,'left',64,ay,at)}
   const SJ=statItems(d).filter(x=>OPT[x[0]]);
   if(SJ.length){c.strokeStyle=PL.ln;c.lineWidth=1.5;c.beginPath();c.moveTo(64,y0+p.dv);c.lineTo(CW-64,y0+p.dv);c.stroke();
    SJ.forEach(([k,l,val],i)=>{const x=64+(i%2)*((CW-128)/2),yl=y0+p.dv+p.sl0+(i>>1)*p.pit;f(`600 ${p.sl}px ${SG}`,PL.mut,'left',x,yl,l,'3px');f(`700 ${p.sv}px ${SG}`,PL.ink,'left',x,yl+p.sv0,val)})}
   if(OPT.name)f(`600 ${p.nf}px ${SG}`,PL.ink,'left',64,y0+p.nb,(CD.name||'TRADER').toUpperCase(),'5px');
   c.letterSpacing='0px';c.restore();return}
- if(OPT.logo){planetIco(c,92,76,15,lt);f(`800 32px ${OR}`,PL.ink,'left',136,88,'TRADING JOURNAL','1px')}
+ if(OPT.logo)drawBrand(c,PL,lt,false,{hy:68,tf:30,rf:24});
  if(OPT.range)f(`500 22px ${SG}`,PL.mut,'right',CW-64,84,(d.one?d.f:d.f+' → '+d.t));
  const bx=CW-112,by=176;
  c.save();c.strokeStyle=PL.mut;c.globalAlpha=.5;c.lineWidth=1.5;c.beginPath();c.arc(bx,by,56,0,6.283);c.stroke();c.setLineDash([2,7]);c.beginPath();c.arc(bx,by,46,0,6.283);c.stroke();c.restore();
@@ -362,11 +375,6 @@ function drawCard(c,v,d,sc){
   const txt=pnlTxt(d),pos=(CD.mode==='pct'?s.net:CD.mode==='r'?d.rsum:s.net)>=0,col=pos?PL.win:PL.loss,mx=LS?720:CW-128;
   let fs=LS?132:168;c.font=`800 ${fs}px ${OR}`;c.letterSpacing='0px';const w=c.measureText(txt).width;if(w>mx)fs=Math.floor(fs*mx/w);
   c.shadowColor=col;c.shadowBlur=lt?0:34;f(`800 ${fs}px ${OR}`,col,'left',60,372+dy,txt);c.shadowBlur=0}
- if(OPT.acc){
-  const af=OPT.pnl?32:60,ay=(OPT.pnl?428:372)+dy,mw=(OPT.pnl||!LS)?CW-128:760;let at=d.sc;
-  c.font=`${OPT.pnl?500:700} ${af}px ${SG}`;c.letterSpacing='0px';
-  if(c.measureText(at).width>mw){while(at.length>1&&c.measureText(at+'…').width>mw)at=at.slice(0,-1);at+='…'}
-  f(`${OPT.pnl?500:700} ${af}px ${SG}`,PL.ink,'left',64,ay,at)}
  const SI=statItems(d).filter(x=>OPT[x[0]]),sp=Math.min(272,(CW-128)/4);
  if(SI.length){c.strokeStyle=PL.ln;c.lineWidth=1.5;c.beginPath();c.moveTo(64,520+dy);c.lineTo(CW-64,520+dy);c.stroke();
   SI.forEach(([k,l,val],i)=>{f(`600 17px ${SG}`,PL.mut,'left',64+i*sp,566+dy,l,'3px');f(`700 46px ${SG}`,PL.ink,'left',64+i*sp,622+dy,val)})}
@@ -375,8 +383,8 @@ function drawCard(c,v,d,sc){
 function paintAll(){const m=$('#cmain');if(!m)return;const d=cData();drawCard(m.getContext('2d'),CD.v,d,1);
  document.querySelectorAll('.cth').forEach(b=>drawCard(b.firstChild.getContext('2d'),b.dataset.cv,d,.5))}
 const loadFonts=()=>{if(!(document.fonts&&document.fonts.load))return Promise.resolve();
- const d=cData(),sm=(CD.name+' '+d.sc).toUpperCase()+' '+CD.name+' '+d.sc+' TRADER WIN RATE PROFIT FACTOR AVERAGE ĂÂĐÊÔƠƯ ÁÀẢÃẠ';
- return Promise.all([['800 40px Orbitron','TRADING JOURNAL +$0123456789.,%R-'],['500 20px "Space Grotesk"',sm],['600 20px "Space Grotesk"',sm],['700 40px "Space Grotesk"',sm+'0123456789.%R∞']].map(([f,t])=>document.fonts.load(f,t))).then(()=>document.fonts.ready).catch(()=>{})};
+ const sm=(CD.name+' GEXADECIMAL TRADING JOURNAL TRADER WIN RATE PROFIT FACTOR AVERAGE ĂÂĐÊÔƠƯ ÁÀẢÃẠ').toUpperCase();
+ return Promise.all([['800 40px Orbitron','GEXADECIMAL TRADING JOURNAL +$0123456789.,%R-'],['500 20px "Space Grotesk"',sm],['600 20px "Space Grotesk"',sm],['700 40px "Space Grotesk"',sm+'0123456789.%R∞']].map(([f,t])=>document.fonts.load(f,t))).then(()=>document.fonts.ready).catch(()=>{})};
 function showPrev(b,n){const u=URL.createObjectURL(b),o=document.createElement('div');
  o.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,10,.72);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto';
  const k=document.createElement('div');k.className='card';k.style.cssText='max-width:760px;width:100%;max-height:100%;overflow:auto;background:var(--hole);color:var(--ink)';
@@ -394,15 +402,12 @@ function showPrev(b,n){const u=URL.createObjectURL(b),o=document.createElement('
  mk(L('Tải lại','Download again'),()=>saveBlob(b,n),1);
  const c=mk(L('Đóng','Close'),done);
  k.append(p,im,r);o.append(k);o.onclick=ev=>{if(ev.target===o)done()};document.body.append(o);c.focus()}
-function accChips(){const ids=selAccs(),all=ids.length===S.accounts.length;
- return `<label class="chk${all?' on':''}"><input type="checkbox" data-all="1"${all?' checked':''}>∑ ${tr('Tất cả (gộp tổng)')}</label>`+S.accounts.map(a=>{const on=ids.includes(a.id);return `<label class="chk${on?' on':''}"><input type="checkbox" data-acc="${a.id}"${on?' checked':''}>${esc(a.name)}</label>`}).join('')}
 function card(){
  if(CD.tid&&!S.trades.some(x=>String(x.id)===String(CD.tid)))CD.tid=null;
  if(CD.sc!==S.cur){CD.sc=S.cur;CD.from=CD.to='';CD.accs=S.cur==='all'?S.accounts.map(a=>a.id):[S.cur]}
  const d=cData(),mo=[['usd','Số tiền ($)'],['pct','% trên vốn'],['r','Tổng R']];
  $('#v-card').innerHTML=`<div class="card"><h2>${tr('Thẻ flex')}</h2>${CD.tid?`<div class="row" style="margin-bottom:12px;align-items:center"><span style="color:var(--mut)">Thẻ của một lệnh: ${esc(d.one?d.one.symbol+' '+d.one.side+' · '+d.one.date:'')}</span><button class="btn ghost" id="cbk" type="button">Xem thẻ tổng hợp</button></div>`:''}
  <div class="row" id="cctl"><label>${tr('Từ ngày')}<input type="date" id="cfr" value="${d.f}"></label><label>${tr('Đến ngày')}<input type="date" id="cto" value="${d.t}"></label><label>${tr('Hiển thị')}<select id="cmo">${mo.map(([k,n])=>`<option value="${k}"${k===CD.mode?' selected':''}>${tr(n)}</option>`).join('')}</select></label><label>${tr('Khung hình')}<select id="cfm">${[['land','Ngang (mặc định)'],['sq','Vuông 1:1'],['p45','Dọc 4:5'],['st','Story 9:16']].map(([k,n])=>`<option value="${k}"${k===CF?' selected':''}>${tr(n)}</option>`).join('')}</select></label><label style="flex:1;min-width:160px">${tr('Tên hiển thị')}<input id="cnm" maxlength="24" value="${esc(CD.name)}" placeholder="TRADER"></label><button class="btn" id="cdl" type="button">${tr('Tải ảnh PNG')}</button></div>
- <div class="cpick"><label>${tr('Tài khoản hiển thị')}</label><div class="chks" id="cacc">${accChips()}</div></div>
  <div class="cpick"><label>${tr('Nội dung trên thẻ')}</label><div class="chks" id="copt">${COPT.map(([k,n])=>`<label class="chk${OPT[k]?' on':''}"><input type="checkbox" data-o="${k}"${OPT[k]?' checked':''}>${CD.tid&&{wr:'Symbol',pf:'R',avgR:'Giá ra'}[k]||tr(n)}</label>`).join('')}</div></div>
  <div class="cwrap${isLS()?'':' tall'}"><canvas id="cmain" width="${CW}" height="${CH}"></canvas></div></div>
  <div class="card" style="margin-top:14px"><h2>${tr('Chọn phiên bản')}</h2><div class="cgal${isLS()?'':' tall'}">${CV.map(([k,n])=>`<button type="button" class="cth${k===CD.v?' on':''}" data-cv="${k}"><canvas width="${CW/2}" height="${CH/2}"></canvas><span>${n}</span></button>`).join('')}</div></div>`;
@@ -411,21 +416,17 @@ function card(){
  $('#cto').onchange=e=>{CD.to=e.target.value;paintAll()};
  $('#cmo').onchange=e=>{CD.mode=e.target.value;paintAll()};
  $('#cfm').onchange=e=>{CF=e.target.value;[CW,CH]=FMT[CF];P.cfm=CF;savP();card()};
- $('#cacc').onchange=e=>{const i=e.target,ids=S.accounts.map(a=>a.id);
-  if(i.dataset.all)CD.accs=ids;
-  else{const q=new Set(selAccs());i.checked?q.add(i.dataset.acc):q.delete(i.dataset.acc);if(!q.size){i.checked=true;return}CD.accs=ids.filter(x=>q.has(x))}
-  $('#cacc').innerHTML=accChips();const d=cData();$('#cfr').value=d.f;$('#cto').value=d.t;paintAll()};
  $('#copt').onchange=e=>{const i=e.target;OPT[i.dataset.o]=i.checked?1:0;P.copt=OPT;savP();i.closest('.chk').classList.toggle('on',i.checked);paintAll()};
  $('#cnm').oninput=e=>{CD.name=e.target.value;P.cname=CD.name;savP();paintAll()};
  document.querySelector('.cgal').onclick=e=>{const b=e.target.closest('[data-cv]');if(!b)return;CD.v=b.dataset.cv;P.cv=CD.v;savP();document.querySelectorAll('.cth').forEach(x=>x.classList.toggle('on',x===b));paintAll()};
  $('#cdl').onclick=async e=>{const bt=e.currentTarget;if(bt.disabled)return;bt.disabled=true;
-  try{await loadFonts();const cv=document.createElement('canvas');cv.width=CW*2;cv.height=CH*2;drawCard(cv.getContext('2d'),CD.v,cData(),2);
+  try{await Promise.all([loadFonts(),brandLogoPromise]);const cv=document.createElement('canvas');cv.width=CW*2;cv.height=CH*2;drawCard(cv.getContext('2d'),CD.v,cData(),2);
    const b=await new Promise(r=>cv.toBlob(r,'image/png'));if(!b)throw new Error('toBlob');
    const n='flex-card-'+CD.v+'-'+CF+'-'+td()+'.png';saveBlob(b,n);showPrev(b,n)}
   catch(x){note(L('Không tạo được ảnh. Hãy thử lại.','Could not create the image. Please try again.'))}
   bt.disabled=false};
  paintAll();
- loadFonts().then(paintAll)}
+ Promise.all([loadFonts(),brandLogoPromise]).then(paintAll)}
 /* ===== Đồng bộ từ MT5 ===== */
 let SY={url:'',token:'',def:'',map:{},since:0,autoBal:true};
 try{Object.assign(SY,JSON.parse(localStorage.getItem(GX.key('tjp_sync'))||'{}'))}catch(e){}
