@@ -230,18 +230,11 @@ function planetIco(c,x,y,R,lt){c.save();c.translate(x,y);
  c.strokeStyle=rc;ring(0,Math.PI);c.restore()}
 
 const BGF={
-hole(c,r){const [X,Y]=fp(830,372),HR=84;
+hole(c,r){const [X,Y]=fp(830,372);
+ // Clean abstract space background: remove the large planet/black-hole orb from the right side.
  c.fillStyle='#02030a';c.fillRect(0,0,CW,CH);
- blob(c,X,Y,640,'70,50,190',.38);blob(c,sx(180),sy(700),520,'20,100,210',.2);blob(c,X,Y,340,'255,140,40',.26);
- stars(c,r,280,'#fff',1.7);
- const disk=(a,b,k0)=>{c.save();c.translate(X,Y);c.rotate(-.3);c.globalCompositeOperation='lighter';
-  for(let k=0;k<44;k++){const rx=HR+30+k*5.4;c.strokeStyle=`hsla(${46-k*.75},100%,${80-k*1.2}%,${Math.max(.04,(.55-k*.011)*k0)})`;c.lineWidth=2.6;c.beginPath();c.ellipse(0,0,rx,rx*.2,0,a,b);c.stroke()}c.restore()};
- disk(Math.PI,Math.PI*2,.9);
- c.save();c.globalCompositeOperation='lighter';
- for(let k=0;k<14;k++){c.strokeStyle=`hsla(${40-k},100%,${72-k*2}%,${.5-k*.032})`;c.lineWidth=2.2;c.beginPath();c.arc(X,Y,HR+8+k*3.6,0,6.283);c.stroke()}c.restore();
- c.fillStyle='#000';c.shadowColor='rgba(255,170,70,.9)';c.shadowBlur=36;c.beginPath();c.arc(X,Y,HR,0,6.283);c.fill();c.shadowBlur=0;
- c.strokeStyle='rgba(255,226,170,.85)';c.lineWidth=2;c.beginPath();c.arc(X,Y,HR,0,6.283);c.stroke();
- disk(0,Math.PI,1.25)},
+ blob(c,X,Y,640,'70,50,190',.30);blob(c,sx(180),sy(700),520,'20,100,210',.2);
+ stars(c,r,280,'#fff',1.7)},
 nebula(c,r){c.fillStyle='#06041a';c.fillRect(0,0,CW,CH);
  const cols=['139,124,255','61,245,192','92,200,255','255,92,138'];
  c.globalCompositeOperation='lighter';
