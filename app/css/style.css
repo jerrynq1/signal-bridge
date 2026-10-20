@@ -16,6 +16,12 @@ body{--sw:230px}body.sc{--sw:76px}
 .ib{flex:none;width:52px;height:44px;display:grid;place-items:center;border:0;background:none;color:var(--mut);border-radius:12px;cursor:pointer}
 .ib:hover{background:var(--inp);color:var(--ink)}.ib svg{width:22px;height:22px}
 .brand{display:flex;align-items:center;margin:0;font-size:14px;line-height:1.2;white-space:nowrap}
+/* Desktop sidebar brand alignment fix */
+#side .sh{gap:6px;min-width:0}
+#side .sh>.ib{width:38px;min-width:38px;padding:0}
+#side .sh>.brand{flex:1;min-width:0;gap:0;font-size:11px;letter-spacing:.01em}
+#side .sh>.brand .blogo{height:26px;margin-right:7px}
+#side .sh>.brand .wm{font-size:11px;letter-spacing:.035em;white-space:nowrap}
 #side nav{display:flex;flex-direction:column;gap:4px;flex:1}
 .sb{display:flex;align-items:center;gap:14px;width:100%;height:44px;padding:0 0 0 15px;border:0;background:none;color:var(--mut);font:inherit;font-weight:600;border-radius:12px;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden}
 .sb .ic{flex:none;width:22px;height:22px;display:grid;place-items:center}.sb svg{width:22px;height:22px}
