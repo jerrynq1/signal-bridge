@@ -85,6 +85,19 @@ Mục **Kết nối** có nút **Xoá tài khoản** (cuối thẻ). Bấm vào 
 - Journal (header `Authorization: Bearer <phiên>`): `GET /api/health`, `GET /api/trades`, `GET /api/quote`
 - EA (header `X-Token: <EA key>`): `POST /api/ea/deals`, `POST /api/ea/quote`
 
+## Chế độ bảo trì (chưa công bố app)
+
+`maintenance.html` là trang "Đang bảo trì". Bật/tắt trong `app/js/config.js`:
+
+```js
+MAINTENANCE: true,        // true = sau đăng nhập bị chuyển sang maintenance.html; false = vào app bình thường
+MAINTENANCE_ALLOW: []     // Discord ID được vào app dù đang bảo trì, ví dụ ["123456789012345678"]
+```
+
+**Tháo bảo trì:** đổi `MAINTENANCE: true` thành `MAINTENANCE: false`, đẩy `config.js` lên GitHub Pages rồi Ctrl+F5. Ai mở `maintenance.html` lúc đó cũng được đưa thẳng vào app. Không cần xoá file nào.
+
+Lưu ý: đây là chuyển hướng ở phía trình duyệt. Dữ liệu vẫn được Worker bảo vệ bằng phiên đăng nhập, nhưng muốn chặn thật việc đăng nhập thì đặt `DISCORD_ROLE_ID` trên Worker.
+
 ## Đăng nhập
 
 Chỉ đăng nhập bằng Discord, và chỉ thành viên server (và role nếu có đặt `DISCORD_ROLE_ID`) mới vào được. Mỗi tài khoản Discord có journal, số dư và EA key riêng: Worker lưu lệnh theo `user_id`, web lưu dữ liệu local theo từng tài khoản (`tjp_data:<discord id>`).
