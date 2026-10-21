@@ -60,18 +60,34 @@ $("cDel").onclick=async()=>{
 };
 $("lo").onclick=()=>GX.logout();
 
+/* ================= TẢI XUỐNG (link đặt ở config.js > DOWNLOAD_URL) ================= */
+function fillDl(){
+  const u=((window.GX_CONFIG&&GX_CONFIG.DOWNLOAD_URL)||"").trim(),b=$("dlBtn");
+  if(u){b.href=u;b.hidden=false;$("dlSoon").hidden=true}else{b.hidden=true;$("dlSoon").hidden=false}
+}
+$("dlGo").onclick=()=>show("conn");
+
+/* ================= BUY ME A COFFEE ================= */
+$("cfCopy").onclick=async()=>{
+  try{await navigator.clipboard.writeText("https://paypal.me/jerryforex");$("cfMsg").textContent="Đã sao chép."}
+  catch(e){$("cfMsg").textContent="Không sao chép được, hãy tự bôi đen và copy."}
+};
+
 /* ================= GIAO DIỆN: sidebar, theme, bầu trời sao ================= */
 const IC={conn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0z"/><path d="M12 18v3"/></svg>'};
 IC.jr='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>';
 IC.an='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 20v-7M12 20V5M18 20v-10"/></svg>';
+IC.dl='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
+IC.cf='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2M8 3v3M12 3v3"/></svg>';
 IC.card='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M6.5 15h4"/></svg>';
-const V=[["jr","Journal"],["an","Analytic"],["card","Flex Card"],["conn","Kết nối"]];
+const V=[["jr","Journal"],["an","Analytic"],["card","Flex Card"],["dl","Tải xuống"],["conn","Kết nối"],["cf","Mời cà phê"]];
 let cur="jr";
 function show(v){
   cur=v;V.forEach(([k])=>$("v-"+k).classList.toggle("on",k===v));
   $("nav").innerHTML=V.map(([k,n])=>`<button class="sb${k===v?" on":""}" data-v="${k}" title="${n}"><span class="ic">${IC[k]}</span><span class="lb">${n}</span></button>`).join("");
   if(window.JR&&["jr","an","card"].includes(v))JR.show(v);
   if(v==="conn")fillConn();
+  if(v==="dl")fillDl();
   document.body.classList.remove("so");
   try{history.replaceState(null,"","#"+v)}catch(e){}
 }

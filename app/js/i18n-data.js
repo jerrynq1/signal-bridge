@@ -398,6 +398,32 @@ const T=[
 ["Equity","Equity","净值"],
 ["Lot","Lot","手数"],
 ["P/L","P/L","盈亏"],
+/* --- Tải xuống --- */
+["Tải xuống","Download","下载"],
+["EA SignalBridge Journal cho MT5. Chỉ gửi lệnh đã đóng và số dư lên Journal, không vào lệnh, không sửa hay đóng lệnh của bạn.","The SignalBridge Journal EA for MT5. It only sends closed trades and your balance to the Journal; it never opens, modifies or closes trades.","适用于 MT5 的 SignalBridge Journal EA。它只会把已平仓订单和余额发送到日志，不会开仓、修改或平仓。"],
+["Expert Advisor cho MetaTrader 5 · v3.00","Expert Advisor for MetaTrader 5 · v3.00","MetaTrader 5 智能交易程序 (EA) · v3.00"],
+["Link tải sẽ được cập nhật sớm.","The download link will be available soon.","下载链接即将更新。"],
+["Cài đặt nhanh","Quick setup","快速安装"],
+["Tải file EA về máy bằng nút phía trên.","Download the EA file with the button above.","点击上方按钮下载 EA 文件。"],
+["Mở MT5, chọn File > Open Data Folder > MQL5 > Experts rồi chép file vào đó. Nếu là file .mq5, mở bằng MetaEditor và bấm Compile (F7).","In MT5, choose File > Open Data Folder > MQL5 > Experts and copy the file there. If it is a .mq5 file, open it in MetaEditor and press Compile (F7).","在 MT5 中选择 文件 > 打开数据文件夹 > MQL5 > Experts，将文件复制进去。如果是 .mq5 文件，请用 MetaEditor 打开并点击编译 (F7)。"],
+["Vào Tools > Options > Expert Advisors, bật Allow WebRequest và thêm API URL của Journal vào danh sách.","Go to Tools > Options > Expert Advisors, enable Allow WebRequest and add the Journal API URL to the list.","进入 工具 > 选项 > EA 交易，启用 Allow WebRequest，并把日志的 API URL 加入列表。"],
+["Kéo EA vào biểu đồ bất kỳ, nhập InpApiUrl và InpToken (lấy ở mục Kết nối). Journal sẽ tự đồng bộ lệnh đã đóng.","Drag the EA onto any chart and enter InpApiUrl and InpToken (found in the Connection section). The Journal will then sync your closed trades automatically.","把 EA 拖到任意图表，填写 InpApiUrl 和 InpToken（在“连接”页面获取）。日志将自动同步已平仓订单。"],
+["Đi tới Kết nối","Go to Connection","前往连接"],
+/* --- Buy me a Coffee --- */
+["Mời cà phê","Buy me a Coffee","请我喝咖啡"],
+["Mời tôi một ly cà phê ☕","Buy me a coffee ☕","请我喝杯咖啡 ☕"],
+["Gexadecimal được xây dựng và duy trì bởi một trader dành cho cộng đồng, và hoàn toàn miễn phí. Nếu Journal giúp bạn giao dịch kỷ luật hơn và bạn muốn tiếp thêm động lực để mình tiếp tục cập nhật tính năng mới, bạn có thể mời mình một ly cà phê.","Gexadecimal is built and maintained by a trader for the community, and it is completely free. If the Journal helps you trade with more discipline and you would like to give me a bit more motivation to keep adding new features, you can buy me a coffee.","Gexadecimal 由一位交易者为社区打造和维护，完全免费。如果日志帮助你更有纪律地交易，并且你愿意给我多一点动力继续更新新功能，欢迎请我喝杯咖啡。"],
+["Hoàn toàn tự nguyện, không bắt buộc.","Entirely voluntary, never required.","完全自愿，绝非强制。"],
+["Bạn không cần donate để dùng bất kỳ tính năng nào, và việc donate cũng không thay đổi quyền lợi của bạn trong Journal. Không donate cũng hoàn toàn không sao.","You do not need to donate to use any feature, and donating does not change what you get in the Journal. Not donating is perfectly fine.","你无需捐赠即可使用任何功能，捐赠也不会改变你在日志中的权益。不捐赠也完全没有关系。"],
+["Chuyển khoản ngân hàng","Bank transfer","银行转账"],
+["Mở app ngân hàng và quét mã VietQR bên dưới (hỗ trợ ngân hàng trong nước qua Napas 247). Số tiền tuỳ tâm của bạn.","Open your banking app and scan the VietQR code below (supported by Vietnamese banks via Napas 247). Any amount is welcome.","打开银行 App 并扫描下方 VietQR 二维码（越南国内银行通过 Napas 247 支持）。金额随意。"],
+["Mã QR VPBank","VPBank QR code","VPBank 二维码"],
+["Lưu ảnh QR","Save QR image","保存二维码图片"],
+["Dành cho bạn ở nước ngoài hoặc dùng thẻ quốc tế. Bấm nút để mở trang PayPal, rồi nhập số tiền tuỳ ý.","For supporters abroad or those using an international card. Click the button to open PayPal, then enter any amount you like.","适合身在海外或使用国际银行卡的朋友。点击按钮打开 PayPal，然后输入任意金额。"],
+["Mở PayPal","Open PayPal","打开 PayPal"],
+["Sao chép link","Copy link","复制链接"],
+["Cảm ơn bạn đã dùng Gexadecimal, dù bạn có donate hay không. Chúc bạn giao dịch kỷ luật và bền vững.","Thank you for using Gexadecimal, whether or not you donate. Wishing you disciplined and sustainable trading.","感谢你使用 Gexadecimal，无论你是否捐赠。祝你交易有纪律、走得长远。"],
+["Chủ tài khoản","Account holder","账户名"],
 ];
 
 const VIO=new Map([["Chart","Biểu đồ"],["Indicator","Chỉ báo"],["Chart Setting","Cài đặt biểu đồ"],["Journal","Nhật ký"],["Analytic","Phân tích"],["Flex Card","Thẻ Flex"],["EA Setting","Cài đặt EA"],["ƒx Indicator","ƒx Chỉ báo"],["Net P&L","Lãi/lỗ ròng"],["Win rate","Tỷ lệ thắng"],["Average R","R trung bình"],["Symbol","Mã"],["Balance","Số dư"],["Equity","Vốn"],["Floating","Lãi/lỗ tạm tính"]]);
