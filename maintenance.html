@@ -41,6 +41,7 @@ h1{font:800 clamp(26px,5vw,38px)/1.15 Sora,sans-serif;margin:14px 0 12px;backgro
 p{margin:0 0 8px;color:var(--mut)}
 .bar{position:relative;height:6px;margin:22px auto 24px;max-width:320px;border-radius:99px;background:var(--inp);border:1px solid var(--line);overflow:hidden}
 .bar i{position:absolute;inset:0 auto 0 0;width:40%;border-radius:99px;background:var(--grad);animation:slide 1.8s ease-in-out infinite}
+.myid{margin:18px 0 0;font-size:12px;color:var(--mut)}.myid code{cursor:pointer;color:var(--acc);font-weight:700;word-break:break-all}
 .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .btn{display:inline-block;font:inherit;font-weight:700;border:0;background:var(--grad);color:var(--onacc);padding:10px 20px;border-radius:999px;cursor:pointer;text-decoration:none;box-shadow:0 0 18px rgba(var(--glow),.35),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 4px rgba(120,70,0,.3)}
 .btn:hover{box-shadow:0 0 28px rgba(var(--glow),.6),inset 0 1px 0 rgba(255,255,255,.6)}
@@ -72,6 +73,7 @@ p{margin:0 0 8px;color:var(--mut)}
       <a class="btn" href="index.html" data-t="home"></a>
       <button class="btn ghost" id="lo" type="button" data-t="out"></button>
     </div>
+    <p class="myid" id="myid" hidden><span data-t="idl"></span> <code id="uid" title="Copy"></code></p>
   </section>
 </main>
 <script src="app/js/config.js"></script>
@@ -83,9 +85,9 @@ const $ = s => document.querySelector(s);
 const ld = (k, d) => { try { return localStorage.getItem(k) ?? d } catch (e) { return d } };
 const sv = (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} };
 const D = {
-  vi: { t: "Đang bảo trì – Gexadecimal", pill: "● Bảo trì", h1: "Đang bảo trì", p1: "Gexadecimal đang được hoàn thiện và chưa mở công khai.", p2: "Cảm ơn bạn đã quan tâm, chúng tôi sẽ sớm quay lại.", home: "Về trang chủ", out: "Đăng xuất" },
-  en: { t: "Under Maintenance – Gexadecimal", pill: "● Maintenance", h1: "Under Maintenance", p1: "Gexadecimal is being finished and is not open to the public yet.", p2: "Thank you for your interest, we will be back soon.", home: "Back to home", out: "Log out" },
-  zh: { t: "维护中 – Gexadecimal", pill: "● 维护", h1: "系统维护中", p1: "Gexadecimal 正在完善中，暂未对外开放。", p2: "感谢你的关注，我们很快回来。", home: "返回首页", out: "退出登录" }
+  vi: { t: "Đang bảo trì – Gexadecimal", pill: "● Bảo trì", h1: "Đang bảo trì", p1: "Gexadecimal đang được hoàn thiện và chưa mở công khai.", p2: "Cảm ơn bạn đã quan tâm, chúng tôi sẽ sớm quay lại.", home: "Về trang chủ", out: "Đăng xuất", idl: "Discord ID của bạn (bấm để sao chép):" },
+  en: { t: "Under Maintenance – Gexadecimal", pill: "● Maintenance", h1: "Under Maintenance", p1: "Gexadecimal is being finished and is not open to the public yet.", p2: "Thank you for your interest, we will be back soon.", home: "Back to home", out: "Log out", idl: "Your Discord ID (click to copy):" },
+  zh: { t: "维护中 – Gexadecimal", pill: "● 维护", h1: "系统维护中", p1: "Gexadecimal 正在完善中，暂未对外开放。", p2: "感谢你的关注，我们很快回来。", home: "返回首页", out: "退出登录", idl: "你的 Discord ID（点击复制）：" }
 };
 let L = ld("gx-lang", ""); if (!D[L]) { const n = (navigator.language || "").toLowerCase(); L = n.startsWith("zh") ? "zh" : n.startsWith("vi") ? "vi" : "en"; }
 function setLang(l) {
@@ -102,6 +104,12 @@ function setTheme(t) { T = t; document.documentElement.dataset.theme = t; sv("gx
 $("#th").onclick = () => setTheme(T === "dark" ? "light" : "dark");
 setTheme(T);
 
+(function () {
+  try {
+    const t = localStorage.getItem("gx_session") || "", d = JSON.parse(atob(t.split(".")[0].replace(/-/g, "+").replace(/_/g, "/")));
+    if (d && d.uid) { $("#uid").textContent = d.uid; $("#myid").hidden = false; $("#uid").onclick = () => { try { navigator.clipboard.writeText(String(d.uid)); $("#uid").textContent = d.uid + " ✓"; } catch (e) {} }; }
+  } catch (e) {}
+})();
 $("#lo").onclick = () => { try { localStorage.removeItem("gx_session") } catch (e) {} location.replace("login.html"); };
 
 (function () {
