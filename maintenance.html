@@ -80,7 +80,7 @@ p{margin:0 0 8px;color:var(--mut)}
 <script>document.write('<script src="app/js/config.js?t='+Date.now()+'"><\/script>')</script>
 <script>
 /* Tắt bảo trì (config.js > MAINTENANCE:false) thì ai mở trang này cũng được đưa thẳng vào app. */
-if (!(window.GX_CONFIG && GX_CONFIG.MAINTENANCE)) location.replace("app/index.html");
+if (!(window.GX_CONFIG && GX_CONFIG.MAINTENANCE) && !/[?&]s=1/.test(location.search)) location.replace("app/index.html");   // ?s=1 = server đang bảo trì, không đưa vào app (tránh lặp)
 
 const $ = s => document.querySelector(s);
 const ld = (k, d) => { try { return localStorage.getItem(k) ?? d } catch (e) { return d } };
