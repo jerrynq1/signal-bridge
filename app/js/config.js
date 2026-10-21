@@ -7,5 +7,5 @@ window.GX_CONFIG = {
      Muốn mở app cho mọi người: đổi true thành false (xem README). */
   MAINTENANCE: true,
   /* Discord ID của những người vẫn được vào app khi đang bảo trì (ví dụ chính bạn để test), dạng chuỗi: ["123456789012345678"] */
-  MAINTENANCE_ALLOW: []
+  MAINTENANCE_ALLOW: ["889713051631239189"]
 };
