@@ -25,7 +25,7 @@ const GX=(function(){
 
   // Chế độ bảo trì (config.js > MAINTENANCE): chuyển sang maintenance.html, trừ Discord ID nằm trong MAINTENANCE_ALLOW
   const cf=window.GX_CONFIG||{};
-  if(cf.MAINTENANCE&&!(cf.MAINTENANCE_ALLOW||[]).map(String).includes(uid)){document.documentElement.style.visibility="hidden";location.replace("../maintenance.html");return g}
+  if(cf.MAINTENANCE&&!(cf.MAINTENANCE_ALLOW||[]).map(x=>String(x).trim()).includes(uid)){document.documentElement.style.visibility="hidden";location.replace("../maintenance.html");return g}
 
   // lần đầu sau khi nâng cấp: chuyển dữ liệu local cũ (chưa gắn tài khoản) về tài khoản này, rồi xoá khoá cũ
   try{
