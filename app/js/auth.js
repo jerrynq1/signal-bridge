@@ -44,7 +44,7 @@ const GX=(function(){
 
   // xác nhận phiên với server + lấy tên, avatar, EA key
   fetch(api+"/auth/me",{headers:{Authorization:"Bearer "+tok}}).then(async r=>{
-    if(r.status===401){let e="expired";try{e=(await r.json()).error||e}catch(_){}g.expired(e);return}
+    if(r.status===401){let e="expired";try{e=(await r.json()).error||e}catch(_){}if(e==="maintenance"){document.documentElement.style.visibility="hidden";location.replace("../maintenance.html?s=1");return}g.expired(e);return}
     if(!r.ok)return;
     g.me=await r.json();
     if(g.me.terms_ok===false){g.expired("terms_update");return} // chưa đồng ý bản điều khoản hiện hành (tài khoản cũ hoặc điều khoản vừa đổi) -> về login tích lại
