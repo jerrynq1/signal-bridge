@@ -5,7 +5,7 @@ window.GX_CONFIG = {
   DOWNLOAD_URL: "",
   /* BẢO TRÌ: true = sau khi đăng nhập sẽ bị chuyển sang maintenance.html thay vì vào app.
      Muốn mở app cho mọi người: đổi true thành false (xem README). */
-  MAINTENANCE: true,
+  MAINTENANCE: false,
   /* Discord ID của những người vẫn được vào app khi đang bảo trì (ví dụ chính bạn để test), dạng chuỗi: ["123456789012345678"] */
   MAINTENANCE_ALLOW: ["889713051631239189"]
 };
