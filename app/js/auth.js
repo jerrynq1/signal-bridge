@@ -7,6 +7,7 @@ const GX=(function(){
   const KEY="gx_session",LOGIN="../login.html";
   const rd=()=>{try{return localStorage.getItem(KEY)||""}catch(e){return""}};
   const wr=t=>{try{t?localStorage.setItem(KEY,t):localStorage.removeItem(KEY)}catch(e){}};
+  try{const q=/[?&]preview=([^&#]+)/.exec(location.search);if(q)localStorage.setItem("gx_preview",decodeURIComponent(q[1]))}catch(e){} // mã xem trước khi bảo trì (config.js > MAINTENANCE_KEY)
   const m=/[#&]token=([^&]+)/.exec(location.hash);
   if(m){wr(decodeURIComponent(m[1]));history.replaceState(null,"",location.pathname+location.search)}
   const tok=rd();
@@ -25,7 +26,11 @@ const GX=(function(){
 
   // Chế độ bảo trì (config.js > MAINTENANCE): chuyển sang maintenance.html, trừ Discord ID nằm trong MAINTENANCE_ALLOW
   const cf=window.GX_CONFIG||{};
-  if(cf.MAINTENANCE&&!(cf.MAINTENANCE_ALLOW||[]).map(x=>String(x).trim()).includes(uid)){document.documentElement.style.visibility="hidden";location.replace("../maintenance.html");return g}
+  if(cf.MAINTENANCE){
+    let pk="";try{pk=localStorage.getItem("gx_preview")||""}catch(e){}
+    const ok=(cf.MAINTENANCE_ALLOW||[]).map(x=>String(x).trim()).includes(uid)||(!!cf.MAINTENANCE_KEY&&pk===String(cf.MAINTENANCE_KEY));
+    if(!ok){document.documentElement.style.visibility="hidden";location.replace("../maintenance.html");return g}
+  }
 
   // lần đầu sau khi nâng cấp: chuyển dữ liệu local cũ (chưa gắn tài khoản) về tài khoản này, rồi xoá khoá cũ
   try{
