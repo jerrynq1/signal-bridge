@@ -7,8 +7,8 @@ window.GX_CONFIG = {
      Muốn mở app cho mọi người: đổi true thành false (xem README). */
   MAINTENANCE: true,
   /* Discord ID của những người vẫn được vào app khi đang bảo trì (ví dụ chính bạn để test), dạng chuỗi: ["123456789012345678"] */
-  MAINTENANCE_ALLOW: ["889713051631239189"],
+  MAINTENANCE_ALLOW: [],
   /* Cách thay thế nếu không muốn dùng ID: đặt một mã riêng, ví dụ "abc123xyz". Chỉ cần mở MỘT LẦN
      app/index.html?preview=abc123xyz trên trình duyệt đó, rồi đăng nhập là vào được app. Để "" = tắt cách này. */
-  MAINTENANCE_KEY: "jerrynq1"
+  MAINTENANCE_KEY: ""
 };
