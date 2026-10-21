@@ -193,3 +193,29 @@ body.sc .usr .lb{display:none}
 @keyframes gxu{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.gxo,.gxd{animation:none}}
 @media (max-width:480px){.gxb .btn{flex:1 1 100%}}
+
+/* Tải xuống */
+.dlrow{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--inp)}
+.dlinfo{display:flex;align-items:center;gap:14px;min-width:0}
+.dlinfo b{display:block}
+.dlic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:var(--acc);background:var(--card);border:1px solid var(--line)}
+.dlic svg{width:22px;height:22px}
+.dlh{font-size:1rem;margin:20px 0 8px}
+.dlsteps{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--mut);font-size:14px}
+.dlsteps li::marker{color:var(--acc);font-weight:700}
+.dlrow .btn{text-decoration:none;display:inline-block}
+.dlrow .btn[hidden],#dlSoon[hidden]{display:none}
+
+/* Buy me a Coffee */
+.cfnote{display:flex;flex-direction:column;gap:2px;padding:12px 14px;margin-bottom:16px;border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:12px;background:var(--inp);font-size:14px}
+.cfnote span{color:var(--mut)}
+.cfgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:760px){.cfgrid{grid-template-columns:1fr}}
+.cfqr{background:#fff;border-radius:14px;padding:10px;max-width:280px;margin:14px auto}
+.cfqr img{display:block;width:100%;height:auto;border-radius:6px}
+.cfpp{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:18px 0}
+.cfppic{font:800 13px Sora,system-ui,sans-serif;padding:4px 10px;border-radius:8px;background:#0070e0;color:#fff;letter-spacing:.02em}
+.cfpp code{font:600 15px "Space Grotesk",monospace;color:var(--acc)}
+.bar a.btn{text-decoration:none;display:inline-block}
+.cfacc{display:flex;flex-direction:column;align-items:center;gap:2px;margin:0 0 12px}
+.cfacc b{font-size:16px;letter-spacing:.04em;color:var(--acc)}
