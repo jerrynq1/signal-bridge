@@ -1,3 +1,4 @@
+// © 2026 Gexadecimal. All rights reserved. Mã nguồn độc quyền, xem file LICENSE. Không được sao chép, sửa đổi hay phân phối lại khi chưa có sự cho phép bằng văn bản.
 /* Nội dung FAQ dùng chung cho trang chủ (index.html, chỉ hiện các mục có home:1) và faq.html (hiện tất cả).
    Mỗi câu: q / a = [Tiếng Việt, English, 中文]; các đoạn trong câu trả lời tách bằng "\n\n". Muốn thêm câu hỏi, thêm một mục vào nhóm phù hợp. */
 window.GX_FAQ = [

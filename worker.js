@@ -1,18 +1,19 @@
+// © 2026 Gexadecimal. All rights reserved. Mã nguồn độc quyền, xem file LICENSE. Không được sao chép, sửa đổi hay phân phối lại khi chưa có sự cho phép bằng văn bản.
 // Gexadecimal Trading Journal API – Cloudflare Worker + D1 (đăng nhập Discord, mỗi thành viên một journal riêng)
 //
 // Binding bắt buộc : DB (D1 database)
 // Secret bắt buộc  : DISCORD_CLIENT_SECRET, SESSION_SECRET   (chỉ 2 cái này là bí mật thật, KHÔNG ghi vào code)
-// Đã đặt sẵn trong code (là thông tin công khai, xem DEFAULTS bên dưới): DISCORD_CLIENT_ID, DISCORD_GUILD_ID. FRONTEND_URL thì tự đặt trên Cloudflare
+// Đã đặt sẵn trong code (là thông tin công khai, xem DEFAULTS bên dưới): DISCORD_CLIENT_ID, DISCORD_GUILD_ID, FRONTEND_URL
 //   -> muốn đổi thì chỉ cần thêm biến cùng tên trên Cloudflare, giá trị trên Cloudflare sẽ ghi đè.
 // Secret tuỳ chọn  : DISCORD_ROLE_ID   (chỉ cho role này vào; nhiều role cách nhau dấu phẩy)
 //                    DISCORD_BOT_TOKEN (bot trong server, dùng kiểm tra lại thành viên mỗi 10 phút để đá người đã rời/bị kick)
 //                    SESSION_DAYS      (thời hạn phiên đăng nhập, mặc định 7 ngày)
+//                    MAINTENANCE, MAINTENANCE_ALLOW (bảo trì phía server)
 // Dữ liệu giá cTrader (Worker giữ secret, trình duyệt KHÔNG bao giờ thấy):
 //   Secret bắt buộc : CT_CLIENT_ID, CT_CLIENT_SECRET, CT_ACCESS_TOKEN   (app + token của chủ; token chỉ cần scope Accounts)
 //   Tuỳ chọn        : CT_ACCOUNT_ID (ctidTraderAccountId; bỏ trống = tự lấy tài khoản đầu tiên khớp CT_ENV), CT_ENV ("live" mặc định hoặc "demo")
 //   GET /ct (WebSocket) proxy tới cTrader Open API: client gửi payloadType 9001 {token:<phiên Discord>} rồi chỉ được gửi các lệnh lấy dữ liệu thị trường
 //
-
 // Đăng nhập (web):
 //   GET  /auth/discord/login?terms=<phiên bản>   chuyển sang Discord (bắt buộc đúng TERMS_VERSION, nếu không báo lỗi "terms")
 //   GET  /auth/discord/callback   Discord gọi về; kiểm tra có trong server không, rồi chuyển về web kèm phiên
@@ -28,19 +29,18 @@ const enc = new TextEncoder();
 const CHECK_MS = 10 * 60 * 1000;
 // Phiên bản Điều khoản hiện hành. Khi sửa nội dung điều khoản: đổi giá trị này VÀ TERMS_VERSION trong login.html
 // -> mọi người dùng cũ sẽ bị yêu cầu đăng nhập lại và tích đồng ý lần nữa.
-const TERMS_VERSION = "2026-10-24-1";
+const TERMS_VERSION = "2026-10-24-1";   // phải trùng login.html và terms.html
 
 // Giá trị CÔNG KHAI nên để sẵn ở đây cho đỡ phải nhập trên Cloudflare
 const DEFAULTS = {
   DISCORD_CLIENT_ID: "1562015837739683850",
   DISCORD_GUILD_ID: "1562048805522903062",
-  // FRONTEND_URL: đặt ở biến môi trường trên Cloudflare (địa chỉ web đang chạy, vd https://<user>.github.io/<repo> khi test). Chưa có domain riêng nên không đặt mặc định.
+  FRONTEND_URL: "https://www.gexadecimal.dev",
 };
-const KEYS = ["DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET", "DISCORD_GUILD_ID", "DISCORD_ROLE_ID", "DISCORD_BOT_TOKEN", "SESSION_SECRET", "SESSION_DAYS", "FRONTEND_URL", "CT_CLIENT_ID", "CT_CLIENT_SECRET", "CT_ACCESS_TOKEN", "CT_ACCOUNT_ID", "CT_ENV"];
+const KEYS = ["DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET", "DISCORD_GUILD_ID", "DISCORD_ROLE_ID", "DISCORD_BOT_TOKEN", "SESSION_SECRET", "SESSION_DAYS", "FRONTEND_URL", "MAINTENANCE", "MAINTENANCE_ALLOW", "CT_CLIENT_ID", "CT_CLIENT_SECRET", "CT_ACCESS_TOKEN", "CT_ACCOUNT_ID", "CT_ENV"];
 const cfg = (raw) => { const e = { DB: raw.DB }; for (const k of KEYS) e[k] = raw[k] || DEFAULTS[k]; return e; };
-// Cho phép cả bản có và không có www gọi API
+// Cho phép cả gexadecimal.dev lẫn www.gexadecimal.dev gọi API
 const corsOrigin = (env, req) => {
-  if (!env.FRONTEND_URL) return req.headers.get("Origin") || "*"; // chưa đặt FRONTEND_URL: cho origin đang gọi (chỉ để báo lỗi cấu hình rõ ràng)
   const o = new URL(env.FRONTEND_URL).origin;
   const alt = new URL(o).hostname.startsWith("www.") ? o.replace("//www.", "//") : o.replace("//", "//www.");
   const r = req.headers.get("Origin");
@@ -85,9 +85,30 @@ const rolesOk = (env, roles) => {
   const need = String(env.DISCORD_ROLE_ID || "").split(",").map((s) => s.trim()).filter(Boolean);
   return !need.length || (roles || []).some((r) => need.includes(r));
 };
+// Gọi Discord có giới hạn thời gian (8 giây) để không treo cả lượt đăng nhập; GET được thử lại 1 lần khi Discord báo 429/5xx hoặc quá hạn
+async function dfetch(url, opts = {}, retries = 0) {
+  for (let i = 0; ; i++) {
+    try {
+      const r = await fetch(url, { ...opts, signal: AbortSignal.timeout(8000) });
+      if ((r.status === 429 || r.status >= 500) && i < retries) {
+        const w = Math.min(Number(r.headers.get("Retry-After")) || 0.5, 2);
+        await new Promise((res) => setTimeout(res, w * 1000));
+        continue;
+      }
+      return r;
+    } catch (e) { if (i >= retries) throw e; }
+  }
+}
+// Bảo trì phía server (biến Cloudflare): MAINTENANCE = 1 -> chỉ Discord ID trong MAINTENANCE_ALLOW (cách nhau dấu phẩy) mới đăng nhập/dùng được web.
+// Khác với cờ trong config.js (chỉ là màn chắn ở trình duyệt), cái này chặn thật: người ngoài không nhận được phiên và các API web đều từ chối.
+const maintBlocked = (env, uid) =>
+  ["1", "true", "on", "yes"].includes(String(env.MAINTENANCE || "").trim().toLowerCase()) &&
+  !String(env.MAINTENANCE_ALLOW || "").split(",").map((x) => x.trim()).filter(Boolean).includes(String(uid));
 // true = còn trong server (đủ role) | false = không | null = Discord lỗi, không kiểm tra được
 async function memberOk(env, uid) {
-  const r = await fetch(`https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/members/${uid}`, { headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` } });
+  let r;
+  try { r = await dfetch(`https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/members/${uid}`, { headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` } }, 1); }
+  catch { return null; }
   if (r.status === 404) return false;
   if (!r.ok) return null;
   return rolesOk(env, (await r.json()).roles);
@@ -106,29 +127,37 @@ async function gate(env, db, u) {
 let ready = false;
 async function init(db) {
   if (ready) return;
-  await db.prepare(`CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY, name TEXT, avatar TEXT, ea_key TEXT UNIQUE, created INTEGER, last_login INTEGER, checked INTEGER)`).run();
-  // thông tin tài khoản MT5 mới nhất của từng người (k = 'latest:<discord id>')
-  await db.prepare("CREATE TABLE IF NOT EXISTS quote (k TEXT PRIMARY KEY, v TEXT, t INTEGER)").run();
-  // lệnh đã đóng (1 dòng = 1 position MT5), thuộc về 1 user
-  await db.prepare(`CREATE TABLE IF NOT EXISTS trades (
-    id TEXT PRIMARY KEY, account TEXT, pos TEXT, symbol TEXT, side TEXT, volume REAL,
-    open_time INTEGER, close_time INTEGER, open_price REAL, close_price REAL, sl REAL, tp REAL,
-    profit REAL, commission REAL, swap REAL, fee REAL, magic INTEGER, comment TEXT, reason TEXT, updated INTEGER, user_id TEXT)`).run();
-  try { await db.prepare("ALTER TABLE trades ADD COLUMN user_id TEXT").run(); } catch { /* bảng cũ đã có cột thì bỏ qua */ }
-  // ghi nhận đồng ý điều khoản: phiên bản + thời điểm gần nhất trên users, lịch sử đầy đủ trong consents
-  try { await db.prepare("ALTER TABLE users ADD COLUMN terms_version TEXT").run(); } catch { /* đã có cột */ }
-  try { await db.prepare("ALTER TABLE users ADD COLUMN terms_at INTEGER").run(); } catch { /* đã có cột */ }
-  await db.prepare("CREATE TABLE IF NOT EXISTS consents (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, version TEXT, accepted_at INTEGER)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_consents_user ON consents (user_id, accepted_at)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_trades_user ON trades (user_id, close_time)").run();
+  // 1 lượt: tạo các bảng chưa có (users, quote, trades, consents)
+  await db.batch([
+    db.prepare(`CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY, name TEXT, avatar TEXT, ea_key TEXT UNIQUE, created INTEGER, last_login INTEGER, checked INTEGER)`),
+    // thông tin tài khoản MT5 mới nhất của từng người (k = 'latest:<discord id>')
+    db.prepare("CREATE TABLE IF NOT EXISTS quote (k TEXT PRIMARY KEY, v TEXT, t INTEGER)"),
+    // lệnh đã đóng (1 dòng = 1 position MT5), thuộc về 1 user
+    db.prepare(`CREATE TABLE IF NOT EXISTS trades (
+      id TEXT PRIMARY KEY, account TEXT, pos TEXT, symbol TEXT, side TEXT, volume REAL,
+      open_time INTEGER, close_time INTEGER, open_price REAL, close_price REAL, sl REAL, tp REAL,
+      profit REAL, commission REAL, swap REAL, fee REAL, magic INTEGER, comment TEXT, reason TEXT, updated INTEGER, user_id TEXT)`),
+    // ghi nhận đồng ý điều khoản: lịch sử đầy đủ trong consents
+    db.prepare("CREATE TABLE IF NOT EXISTS consents (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, version TEXT, accepted_at INTEGER)"),
+  ]);
+  // 1 lượt: xem bảng đã có cột nào, chỉ ALTER khi thiếu (bảng cũ) thay vì lần nào cũng thử
+  const cols = async (t) => new Set(((await db.prepare(`PRAGMA table_info(${t})`).all()).results || []).map((c) => c.name));
+  const [tc, uc] = await Promise.all([cols("trades"), cols("users")]);
+  const add = async (t, c, type) => { try { await db.prepare(`ALTER TABLE ${t} ADD COLUMN ${c} ${type}`).run(); } catch { /* chạy song song đã thêm rồi thì bỏ qua */ } };
+  if (!tc.has("user_id")) await add("trades", "user_id", "TEXT");
+  if (!uc.has("terms_version")) await add("users", "terms_version", "TEXT");
+  if (!uc.has("terms_at")) await add("users", "terms_at", "INTEGER");
+  await db.batch([
+    db.prepare("CREATE INDEX IF NOT EXISTS idx_consents_user ON consents (user_id, accepted_at)"),
+    db.prepare("CREATE INDEX IF NOT EXISTS idx_trades_user ON trades (user_id, close_time)"),
+  ]);
   ready = true;
 }
 
 const avatarUrl = (u) => u.avatar
   ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`
   : `https://cdn.discordapp.com/embed/avatars/${Number((BigInt(u.id) >> 22n) % 6n)}.png`;
-
 
 // ================= cTrader Open API proxy (WebSocket) =================
 // Secret cTrader nằm ở Worker. Trình duyệt chỉ nói chuyện với /ct bằng phiên Discord; Worker tự đăng nhập ApplicationAuth + AccountAuth
@@ -185,6 +214,7 @@ function ctSession(server, env, db) {
           if (miss.length) return fail(id, "GX_NOCONF", "Worker chưa cài secret cTrader");
           const s = await readToken(env, m.payload && m.payload.token);
           const g = s && await gate(env, db, await db.prepare("SELECT * FROM users WHERE id=?").bind(s.uid).first());
+          if (s && maintBlocked(env, s.uid)) return fail(id, "GX_MAINT", "maintenance");
           if (!g || !g.user) return fail(id, "GX_SESSION", (g && g.err) || "expired");
           uid = String(s.uid); exp = s.exp;
           const n = (ctConns.get(uid) || 0) + 1;
@@ -222,7 +252,7 @@ function ctSession(server, env, db) {
             try {
               if (Date.now() > exp) return fin(1008, "session expired");
               const g2 = await gate(env, db, await db.prepare("SELECT * FROM users WHERE id=?").bind(uid).first());
-              if (!g2.user) fin(1008, "revoked");
+              if (!g2.user || maintBlocked(env, uid)) fin(1008, "revoked");
             } catch { /* lỗi tạm thời: lần sau kiểm lại */ }
           }, 5 * 60 * 1000);
           put({ clientMsgId: id, payloadType: 9002, payload: { accountId: acc, env: host } });
@@ -317,7 +347,7 @@ async function handle(req, env) {
     const terms = cookie[1].split("_")[1];
     if (terms !== TERMS_VERSION) return fail("terms");   // điều khoản vừa đổi giữa chừng
 
-    const tr = await fetch("https://discord.com/api/v10/oauth2/token", {
+    const tr = await dfetch("https://discord.com/api/v10/oauth2/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ client_id: env.DISCORD_CLIENT_ID, client_secret: env.DISCORD_CLIENT_SECRET, grant_type: "authorization_code", code, redirect_uri: CB }),
@@ -326,13 +356,14 @@ async function handle(req, env) {
     const auth = { Authorization: `Bearer ${(await tr.json()).access_token}` };
 
     const [ur, mr] = await Promise.all([
-      fetch("https://discord.com/api/v10/users/@me", { headers: auth }),
-      fetch(`https://discord.com/api/v10/users/@me/guilds/${env.DISCORD_GUILD_ID}/member`, { headers: auth }),
+      dfetch("https://discord.com/api/v10/users/@me", { headers: auth }, 1),
+      dfetch(`https://discord.com/api/v10/users/@me/guilds/${env.DISCORD_GUILD_ID}/member`, { headers: auth }, 1),
     ]);
     if (mr.status === 404) return fail("not_in_server");           // không phải thành viên server
     if (!ur.ok || !mr.ok) return fail("discord_error");
     const du = await ur.json(), mem = await mr.json();
     if (!rolesOk(env, mem.roles)) return fail("missing_role");
+    if (maintBlocked(env, du.id)) return redirect(`${front}/maintenance.html?s=1`, CLEAR);   // đang bảo trì: không tạo tài khoản, không cấp phiên
 
     const now = Date.now();
     const prev = await db.prepare("SELECT terms_version FROM users WHERE id=?").bind(du.id).first();
@@ -352,6 +383,7 @@ async function handle(req, env) {
   const webUser = async () => {
     const s = await readSession(env, req);
     if (!s) return { err: "expired" };
+    if (maintBlocked(env, s.uid)) return { err: "maintenance" };   // phiên cũ của người không được phép cũng bị từ chối
     return gate(env, db, await db.prepare("SELECT * FROM users WHERE id=?").bind(s.uid).first());
   };
 
@@ -478,6 +510,9 @@ export default {
       return await handle(req, env);
     } catch (e) {
       console.log("lỗi xử lý", req.method, new URL(req.url).pathname, e && e.message);
+      if (new URL(req.url).pathname.startsWith("/auth/discord/")) {
+        return new Response(null, { status: 302, headers: { Location: `${String(env.FRONTEND_URL).replace(/\/+$/, "")}/login.html?error=other`, "Cache-Control": "no-store" } });
+      }
       const h = { "Content-Type": "application/json", "Access-Control-Allow-Origin": corsOrigin(env, req), "Vary": "Origin" };
       if (e instanceof SyntaxError) return new Response(JSON.stringify({ error: "JSON không hợp lệ" }), { status: 400, headers: h });
       return new Response(JSON.stringify({ error: "lỗi máy chủ" }), { status: 500, headers: h });   // luôn có CORS để web đọc được lỗi

@@ -1,4 +1,5 @@
-﻿//+------------------------------------------------------------------+
+﻿// © 2026 Gexadecimal. All rights reserved. Mã nguồn độc quyền, xem file LICENSE.
+//+------------------------------------------------------------------+
 //| SignalBridge Journal.mq5   (v3.00 - viết lại hoàn toàn)           |
 //|                                                                  |
 //| Chỉ phục vụ NHẬT KÝ GIAO DỊCH:                                    |

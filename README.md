@@ -256,3 +256,20 @@ Lỗi cũ: Bid/Ask vẫn nhảy nhưng nến + footprint đứng im. Nguyên nh�
 - Kích thước hàng giá tự động tính theo loại (≈ 70 hàng cho ngày, 120 cho tuần, 40 cho một phiên); đặt tay ở "Kích thước hàng giá" nếu muốn.
 - **Thêm TPO chart**: nút nằm dưới chart ở tab TPO Chart, làm giống "Thêm chart": tối đa 4 TPO phụ (3 trên điện thoại), mỗi cái là một iframe `index.html?cid=<id>&v=tpo` có **mã và cài đặt TPO riêng** (lưu `tp_tpo_<id>`, khởi đầu bằng cài đặt TPO của chart chính), nên có thể xem Daily, Weekly và Session cạnh nhau. Ô chọn mã nằm ngay trên thanh công cụ của từng TPO phụ; danh sách lưu ở `tp_mct`. Đổi thứ tự, toàn màn hình, xoá (bấm 2 lần), kéo đổi chiều cao như chart phụ.
 - Code: `tpoGroup` / `tpoNorm` (gom nến theo loại) và khung ngày ở `tpoPaint` trong `js/tpo.js`; `js/multichart.js` chạy hai lần (`mcInit`) cho chart và TPO. Test: `node app/tests/tpo.test.js`.
+
+
+---
+
+# Bản quyền & DMCA
+
+- Mã nguồn **độc quyền, All rights reserved** (xem `LICENSE`). Mỗi file JS/CSS/worker/EA có dòng bản quyền ở đầu, chân trang web có dòng © và chỗ gắn huy hiệu DMCA.
+- Nhớ điền email liên hệ trong `LICENSE` và đổi tên chủ sở hữu "Gexadecimal" thành tên pháp lý của bạn nếu khác.
+- Điều khoản sử dụng (`terms.html`) chưa có điều khoản sở hữu trí tuệ riêng. Nếu thêm, phải đổi `TERMS_VERSION` ở cả `worker.js` và `login.html` (mọi người sẽ phải đồng ý lại).
+
+## Đăng ký DMCA.com và gắn huy hiệu
+1. Vào https://www.dmca.com, đăng ký tài khoản (gói **Free** có huy hiệu).
+2. Thêm website: nhập địa chỉ web của bạn (địa chỉ Pages / domain chính thức).
+3. Chọn kiểu huy hiệu, DMCA.com sẽ cho một **đoạn mã HTML** (có ID riêng của bạn).
+4. Dán đoạn mã đó vào `index.html` và `login.html`, ngay chỗ có comment `DMCA_BADGE` trong `<footer>`. Nếu muốn có ở cả trong app thì dán thêm vào `app/index.html`.
+5. Deploy lại, mở web kiểm tra huy hiệu hiện ra và bấm vào thấy trang trạng thái của DMCA.com.
+6. Khi phát hiện bị chép: gom bằng chứng (link bản chép, ảnh chụp, lịch sử commit của bạn), tìm nhà cung cấp hosting/GitHub của bên kia và gửi DMCA takedown notice.
