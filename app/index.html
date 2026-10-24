@@ -3,11 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Gexadecimal – Trading Journal</title>
+<script>if(/[?&]cid=/.test(location.search))document.documentElement.classList.add("emb");if(/[?&]v=tpo/.test(location.search))document.documentElement.classList.add("emt")</script>
+<style>html.emb #side,html.emb .topbar,html.emb .scrim,html.emb #sky,html.emb #mc,html.emb #mt,html.emb #embBack{display:none!important}html.emb .main{margin-left:0!important}</style>
+<title>Gexadecimal – Order Flow &amp; Trading Journal</title>
 <link rel="icon" type="image/png" href="img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Unbounded:wght@800&family=Sora:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Unbounded:wght@800&family=Sora:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"></noscript>
-<link rel="stylesheet" href="css/style.css?v=17">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Unbounded:wght@800&family=Sora:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=40">
+<link rel="stylesheet" href="css/multichart.css?v=40">
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body class="nt">
 <canvas id="sky"></canvas>
@@ -20,8 +24,81 @@
 <div class="main">
 <div class="topbar"><button class="ib" id="tg2" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3.5"/><path d="M9.5 4v16"/></svg></button><span class="brand"><img class="blogo" src="img/logo.png" alt=""><span class="wm">Gexadecimal</span></span></div>
 <div class="wrap">
+<button class="btn ghost sm" id="embBack" type="button">← Chart</button>
 
-<section class="view jr on" id="v-jr">
+<section class="view on" id="v-chart">
+  <div class="card bar">
+    <div class="symw"><input id="sym" title="Chọn mã giao dịch" aria-label="Mã" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="symDd" autocomplete="off" autocapitalize="characters" spellcheck="false"><svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg></div>
+    <div class="tfs" id="tfs"></div>
+    <span class="pill" id="st">Chưa kết nối</span>
+    <button class="btn ghost sm" data-go="ind">ƒx Indicator</button><button class="btn ghost sm" data-go="cs">🎨 Màu nến</button>
+<div class="px"><span><small>Bid</small><b id="bid">–</b></span><span><small>Ask</small><b id="ask">–</b></span></div>
+  </div>
+  <div class="card" id="chartCard"><div id="ohlc"></div><div id="legend"></div><div id="cw"><div id="chart"></div><div id="panes"></div></div>
+    <div id="clk"><button type="button" id="clkB" aria-haspopup="dialog" aria-expanded="false" title="Đổi múi giờ hiển thị"><span id="clkT">--:--:--</span><small id="clkZ"></small><span aria-hidden="true">▾</span></button></div>
+    <div id="tzp" role="dialog" aria-label="Múi giờ"></div>
+  </div>
+</section>
+
+<section class="view" id="v-tpo">
+  <div class="card bar"><b id="tpoSym" data-no-i18n style="font-weight:700"></b>
+    <button class="btn ghost sm" id="tpoZo" type="button" aria-label="Thu nhỏ">&minus;</button><button class="btn ghost sm" id="tpoZi" type="button" aria-label="Phóng to">+</button><button class="btn ghost sm" id="tpoSq" type="button" aria-label="Ô vuông" title="Ô vuông">1:1</button><select id="tpoMode" aria-label="Loại TPO" title="Loại TPO"><option value="day">TPO Daily</option><option value="week">TPO Weekly</option><option value="session">TPO Session</option></select><button class="btn ghost sm on" id="tpoLive" type="button">Live</button>
+    <button class="btn ghost sm" id="tpoFs" type="button" aria-label="Toàn màn hình" title="Toàn màn hình">⛶</button><button class="btn ghost sm" id="tpoSet" type="button">⚙ TPO Setting</button><span class="msg">Kéo để cuộn · chụm 2 ngón / lăn chuột để zoom · kéo trục giá hoặc trục giờ để zoom riêng từng chiều · nhấp đúp để về Live</span></div>
+  <div class="card" id="tpoCard"><div id="tpoInfo" data-no-i18n></div><canvas id="tpoC"></canvas></div>
+</section>
+<section class="view" id="v-tps"><div id="tpsBody"></div></section>
+
+<div id="mt" aria-label="TPO phụ">
+  <div id="mtGrid"></div>
+  <div class="mcb">
+    <button class="btn ghost" id="mtAdd" type="button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Thêm TPO chart</span></button>
+    <span class="msg" id="mtN" data-no-i18n></span>
+    <div class="seg" id="mtCols" role="group" aria-label="Số cột"><button type="button" data-c="1" title="1 cột" aria-label="1 cột"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/></svg></button><button type="button" data-c="2" title="2 cột" aria-label="2 cột"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="6" height="12" rx="1.5"/><rect x="11" y="4" width="6" height="12" rx="1.5"/></svg></button></div>
+    <span class="msg mch2">Mỗi TPO chart có mã và cài đặt TPO riêng (Daily / Weekly / Session)</span>
+  </div>
+</div>
+
+<div id="mc" aria-label="Chart phụ">
+  <div id="mcGrid"></div>
+  <div class="mcb">
+    <button class="btn ghost" id="mcAdd" type="button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Thêm chart</span></button>
+    <span class="msg" id="mcN" data-no-i18n></span>
+    <div class="seg" id="mcCols" role="group" aria-label="Số cột"><button type="button" data-c="1" title="1 cột" aria-label="1 cột"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/></svg></button><button type="button" data-c="2" title="2 cột" aria-label="2 cột"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="6" height="12" rx="1.5"/><rect x="11" y="4" width="6" height="12" rx="1.5"/></svg></button></div>
+    <span class="msg mch2">Mỗi chart có mã, khung giờ và indicator riêng</span>
+  </div>
+</div>
+
+<section class="view" id="v-ind">
+  <div class="card" id="indTgtW" style="margin-bottom:14px;display:none"><h2>Thêm indicator vào chart</h2><div class="tfs" id="indTgt" data-no-i18n></div></div>
+  <div class="card"><h2>Đang dùng trên chart</h2><div id="actList"></div></div>
+  <div class="card" style="margin-top:14px"><div class="bar" style="margin-bottom:12px"><h2 style="margin:0">Kho indicator</h2><div class="tfs" id="indF"></div></div><div class="grid" id="indGrid"></div></div>
+</section>
+
+<section class="view" id="v-cs"><div id="csBody"></div></section>
+
+<section class="view" id="v-conn">
+  <div class="card" id="ctCard" style="max-width:560px">
+    <h2>Kết nối cTrader Open API</h2>
+    <p class="msg" style="margin:0 0 12px">Dữ liệu giá cTrader do server cung cấp sẵn cho mọi thành viên: bạn không cần (và không thể) nhập Client ID, Secret hay Access Token. Chart tự kết nối khi mở; bấm nút dưới đây nếu muốn kiểm tra lại.</p>
+    <div class="bar" style="margin-top:14px"><button class="btn" id="cSave">Kiểm tra kết nối</button><span class="msg" id="cMsg"></span></div>
+  </div>
+  <div class="card" id="mt5Card" style="max-width:560px;margin-top:14px">
+    <h2>Kết nối MT5 (Journal)</h2>
+    <p class="msg" style="margin:0 0 12px">Mỗi tài khoản Discord có một EA key riêng. Dán API URL và EA key bên dưới vào EA trên MT5 (InpApiUrl, InpToken), Journal sẽ tự đồng bộ lệnh đã đóng của riêng bạn. Đừng chia sẻ EA key cho người khác.</p>
+    <label class="msg" for="mUrl">API URL (InpApiUrl)</label>
+    <div class="kv"><input id="mUrl" readonly><button class="btn ghost" id="mCopyUrl" type="button">Sao chép</button></div>
+    <label class="msg" for="mTok" style="display:block;margin-top:10px">EA key (InpToken)</label>
+    <div class="kv"><input id="mTok" type="password" readonly autocomplete="off"><button class="btn ghost" id="mShow" type="button">Hiện</button><button class="btn ghost" id="mCopyKey" type="button">Sao chép</button></div>
+    <div class="bar" style="margin-top:14px"><button class="btn" id="mSave" type="button">Kiểm tra kết nối</button><button class="btn ghost" id="mNew" type="button">Tạo key mới</button><span class="msg" id="mMsg"></span></div>
+    <div style="margin-top:22px;padding-top:14px;border-top:1px solid var(--line,rgba(128,128,128,.25))">
+      <h2 style="font-size:1rem;margin:0 0 6px">Xoá tài khoản</h2>
+      <p class="msg" style="margin:0 0 10px">Xoá vĩnh viễn tài khoản và toàn bộ dữ liệu của bạn (lệnh đã đồng bộ, số dư, EA key) trên server và trong trình duyệt này. Không thể khôi phục.</p>
+      <button class="btn danger" id="mDel" type="button">Xoá tài khoản</button>
+    </div>
+  </div>
+</section>
+
+<section class="view jr" id="v-jr">
 <div class="row" id="sybar" style="margin-bottom:14px;align-items:center"><button class="btn ghost" id="syb" type="button">Sync từ MT5</button><button class="btn ghost" id="syr" type="button">Tải lại từ đầu</button><button class="btn ghost" id="sye" type="button">Xuất CSV</button><button class="btn ghost" id="syi" type="button">Nhập CSV</button><input type="file" id="syf" accept=".csv,text/csv" hidden><span id="syMsg" style="color:var(--mut);font-size:13px"></span></div>
 <div id="v-dash"></div>
 <h2 id="jh" style="margin:18px 0 0">Lịch sử lệnh</h2>
@@ -48,23 +125,6 @@
     <div class="bar" style="margin-top:14px"><button class="btn ghost" id="dlGo" type="button">Đi tới Kết nối</button></div>
   </div>
 </section>
-<section class="view" id="v-conn">
-  <div class="card" style="max-width:560px">
-    <h2>Kết nối MT5</h2>
-    <p class="msg" style="margin:0 0 12px">Mỗi tài khoản Discord có một EA key riêng. Dán API URL và EA key bên dưới vào EA trên MT5 (InpApiUrl, InpToken), Journal sẽ tự đồng bộ lệnh đã đóng của riêng bạn. Đừng chia sẻ EA key cho người khác.</p>
-    <label class="msg" for="cUrl">API URL (InpApiUrl)</label>
-    <div class="kv"><input id="cUrl" readonly><button class="btn ghost" id="cCopyUrl" type="button">Sao chép</button></div>
-    <label class="msg" for="cTok" style="display:block;margin-top:10px">EA key (InpToken)</label>
-    <div class="kv"><input id="cTok" type="password" readonly autocomplete="off"><button class="btn ghost" id="cShow" type="button">Hiện</button><button class="btn ghost" id="cCopyKey" type="button">Sao chép</button></div>
-    <div class="bar" style="margin-top:14px"><button class="btn" id="cSave" type="button">Kiểm tra kết nối</button><button class="btn ghost" id="cNew" type="button">Tạo key mới</button><span class="msg" id="cMsg"></span></div>
-    <div style="margin-top:22px;padding-top:14px;border-top:1px solid var(--line,rgba(128,128,128,.25))">
-      <h2 style="font-size:1rem;margin:0 0 6px">Xoá tài khoản</h2>
-      <p class="msg" style="margin:0 0 10px">Xoá vĩnh viễn tài khoản và toàn bộ dữ liệu của bạn (lệnh đã đồng bộ, số dư, EA key) trên server và trong trình duyệt này. Không thể khôi phục.</p>
-      <button class="btn danger" id="cDel" type="button">Xoá tài khoản</button>
-    </div>
-  </div>
-</section>
-
 <section class="view" id="v-cf">
   <div style="max-width:820px">
     <h2>Mời tôi một ly cà phê ☕</h2>
@@ -94,14 +154,32 @@
 
 
 <script>document.write('<script src="js/config.js?t='+Date.now()+'"><\/script>')</script>
-<script src="js/auth.js?v=16"></script>
-<script src="js/core.js?v=12"></script>
-<script src="js/dialog.js?v=12"></script>
-<script src="js/api.js?v=12"></script>
-<script src="js/connection-ui.js?v=14"></script>
-<script src="js/journal-flexcard-sync.js?v=13"></script>
-<script src="js/init.js?v=12"></script>
-<script src="js/i18n-data.js?v=15"></script>
-<script src="js/i18n.js?v=12"></script>
+<script src="js/auth.js?v=40"></script>
+<script src="js/core.js?v=40"></script>
+<script src="js/dialog.js?v=40"></script>
+<script src="js/api.js?v=40"></script>
+<script src="js/symbols.js?v=40"></script>
+<script src="js/timezone.js?v=40"></script>
+<script src="js/ctrader.js?v=40"></script>
+<script src="js/chart.js?v=40"></script>
+<script src="js/candle-style.js?v=40"></script>
+<script src="js/indicators-defs.js?v=40"></script>
+<script src="js/indicators-engine.js?v=40"></script>
+<script src="js/connection-ui.js?v=40"></script>
+<script src="js/journal-flexcard-sync.js?v=40"></script>
+<script src="js/init.js?v=40"></script>
+<script src="js/drawings-core.js?v=40"></script>
+<script src="js/volume-profile.js?v=40"></script>
+<script src="js/orderflow-footprint.js?v=40"></script>
+<script src="js/orderflow-bigtrade.js?v=40"></script>
+<script src="js/orderflow-statistic.js?v=40"></script>
+<script src="js/drawings-interact.js?v=40"></script>
+<script src="js/mobile.js?v=40"></script>
+<script src="js/embed.js?v=40"></script>
+<script src="js/tpo.js?v=40"></script>
+<script src="js/multichart.js?v=40"></script>
+<script src="js/i18n-data.js?v=40"></script>
+<script src="js/i18n-data-journal.js?v=40"></script>
+<script src="js/i18n.js?v=40"></script>
 </body>
 </html>
