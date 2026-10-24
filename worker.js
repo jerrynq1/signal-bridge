@@ -2,12 +2,17 @@
 //
 // Binding bắt buộc : DB (D1 database)
 // Secret bắt buộc  : DISCORD_CLIENT_SECRET, SESSION_SECRET   (chỉ 2 cái này là bí mật thật, KHÔNG ghi vào code)
-// Đã đặt sẵn trong code (là thông tin công khai, xem DEFAULTS bên dưới): DISCORD_CLIENT_ID, DISCORD_GUILD_ID, FRONTEND_URL
+// Đã đặt sẵn trong code (là thông tin công khai, xem DEFAULTS bên dưới): DISCORD_CLIENT_ID, DISCORD_GUILD_ID. FRONTEND_URL thì tự đặt trên Cloudflare
 //   -> muốn đổi thì chỉ cần thêm biến cùng tên trên Cloudflare, giá trị trên Cloudflare sẽ ghi đè.
 // Secret tuỳ chọn  : DISCORD_ROLE_ID   (chỉ cho role này vào; nhiều role cách nhau dấu phẩy)
 //                    DISCORD_BOT_TOKEN (bot trong server, dùng kiểm tra lại thành viên mỗi 10 phút để đá người đã rời/bị kick)
 //                    SESSION_DAYS      (thời hạn phiên đăng nhập, mặc định 7 ngày)
+// Dữ liệu giá cTrader (Worker giữ secret, trình duyệt KHÔNG bao giờ thấy):
+//   Secret bắt buộc : CT_CLIENT_ID, CT_CLIENT_SECRET, CT_ACCESS_TOKEN   (app + token của chủ; token chỉ cần scope Accounts)
+//   Tuỳ chọn        : CT_ACCOUNT_ID (ctidTraderAccountId; bỏ trống = tự lấy tài khoản đầu tiên khớp CT_ENV), CT_ENV ("live" mặc định hoặc "demo")
+//   GET /ct (WebSocket) proxy tới cTrader Open API: client gửi payloadType 9001 {token:<phiên Discord>} rồi chỉ được gửi các lệnh lấy dữ liệu thị trường
 //
+
 // Đăng nhập (web):
 //   GET  /auth/discord/login?terms=<phiên bản>   chuyển sang Discord (bắt buộc đúng TERMS_VERSION, nếu không báo lỗi "terms")
 //   GET  /auth/discord/callback   Discord gọi về; kiểm tra có trong server không, rồi chuyển về web kèm phiên
@@ -23,18 +28,19 @@ const enc = new TextEncoder();
 const CHECK_MS = 10 * 60 * 1000;
 // Phiên bản Điều khoản hiện hành. Khi sửa nội dung điều khoản: đổi giá trị này VÀ TERMS_VERSION trong login.html
 // -> mọi người dùng cũ sẽ bị yêu cầu đăng nhập lại và tích đồng ý lần nữa.
-const TERMS_VERSION = "2026-10-20-2";
+const TERMS_VERSION = "2026-10-24-1";
 
 // Giá trị CÔNG KHAI nên để sẵn ở đây cho đỡ phải nhập trên Cloudflare
 const DEFAULTS = {
   DISCORD_CLIENT_ID: "1562015837739683850",
   DISCORD_GUILD_ID: "1562048805522903062",
-  FRONTEND_URL: "https://www.gexadecimal.dev",
+  // FRONTEND_URL: đặt ở biến môi trường trên Cloudflare (địa chỉ web đang chạy, vd https://<user>.github.io/<repo> khi test). Chưa có domain riêng nên không đặt mặc định.
 };
-const KEYS = ["DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET", "DISCORD_GUILD_ID", "DISCORD_ROLE_ID", "DISCORD_BOT_TOKEN", "SESSION_SECRET", "SESSION_DAYS", "FRONTEND_URL"];
+const KEYS = ["DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET", "DISCORD_GUILD_ID", "DISCORD_ROLE_ID", "DISCORD_BOT_TOKEN", "SESSION_SECRET", "SESSION_DAYS", "FRONTEND_URL", "CT_CLIENT_ID", "CT_CLIENT_SECRET", "CT_ACCESS_TOKEN", "CT_ACCOUNT_ID", "CT_ENV"];
 const cfg = (raw) => { const e = { DB: raw.DB }; for (const k of KEYS) e[k] = raw[k] || DEFAULTS[k]; return e; };
-// Cho phép cả gexadecimal.dev lẫn www.gexadecimal.dev gọi API
+// Cho phép cả bản có và không có www gọi API
 const corsOrigin = (env, req) => {
+  if (!env.FRONTEND_URL) return req.headers.get("Origin") || "*"; // chưa đặt FRONTEND_URL: cho origin đang gọi (chỉ để báo lỗi cấu hình rõ ràng)
   const o = new URL(env.FRONTEND_URL).origin;
   const alt = new URL(o).hostname.startsWith("www.") ? o.replace("//www.", "//") : o.replace("//", "//www.");
   const r = req.headers.get("Origin");
@@ -62,14 +68,17 @@ async function makeSession(env, uid) {
   const p = b64u(enc.encode(JSON.stringify({ uid, exp: Date.now() + days * 864e5 })));
   return p + "." + (await sign(env.SESSION_SECRET, p));
 }
-async function readSession(env, req) {
-  const h = req.headers.get("Authorization") || "";
-  const [p, s] = (h.startsWith("Bearer ") ? h.slice(7) : "").split(".");
+async function readToken(env, tok) {
+  const [p, s] = String(tok || "").split(".");
   if (!p || !s || !safeEq(s, await sign(env.SESSION_SECRET, p))) return null;
   try {
     const d = JSON.parse(atob(p.replace(/-/g, "+").replace(/_/g, "/")));
     return d && d.uid && d.exp > Date.now() ? d : null;
   } catch { return null; }
+}
+async function readSession(env, req) {
+  const h = req.headers.get("Authorization") || "";
+  return readToken(env, h.startsWith("Bearer ") ? h.slice(7) : "");
 }
 
 const rolesOk = (env, roles) => {
@@ -120,6 +129,137 @@ const avatarUrl = (u) => u.avatar
   ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`
   : `https://cdn.discordapp.com/embed/avatars/${Number((BigInt(u.id) >> 22n) % 6n)}.png`;
 
+
+// ================= cTrader Open API proxy (WebSocket) =================
+// Secret cTrader nằm ở Worker. Trình duyệt chỉ nói chuyện với /ct bằng phiên Discord; Worker tự đăng nhập ApplicationAuth + AccountAuth
+// bằng secret của chủ, rồi chuyển tiếp CÓ LỌC: client chỉ được gửi các lệnh lấy dữ liệu thị trường (không đọc được tài khoản / lệnh / số dư
+// của chủ, không đặt lệnh được), và sự kiện riêng của tài khoản (execution, margin...) không bao giờ được chuyển xuống client.
+const CT_PORT = 5036;
+const CT_UP_OK = new Set([51, 2104, 2114, 2116, 2127, 2135, 2137, 2145]);   // client -> cTrader: heartbeat, version, symbols, spots, live trendbar, trendbars, ticks
+const CT_DOWN_EVT = new Set([51, 2131]);                                       // cTrader -> client (không phải trả lời): heartbeat, spot
+const CT_DEAD_EVT = new Set([2147, 2164]);                                     // token / tài khoản bị thu hồi
+const CT_MAX_PER_USER = 8;                                                     // số kết nối đồng thời / người (tính trong 1 isolate, mang tính hạn chế chứ không tuyệt đối)
+const ctConns = new Map();
+// Không JSON.parse tin từ cTrader (tick có thể rất lớn, tốn CPU): chỉ nhìn đầu + cuối chuỗi, vì payloadType / clientMsgId luôn nằm ở mép ngoài, không nằm trong payload
+const ctEdge = (s) => s.length <= 360 ? s : s.slice(0, 180) + "\n" + s.slice(-180);
+const ctPT = (e) => { const m = /"payloadType":\s*(\d+)/.exec(e); return m ? +m[1] : 0; };
+const ctMid = (e) => { const m = /"clientMsgId":\s*"([^"]*)"/.exec(e); return m ? m[1] : ""; };
+const ctHist = new Set([2137, 2145]);
+
+function ctSession(server, env, db) {
+  const hist = [];
+  let up = null, uid = "", closed = false, ready = false, authing = false, acc = 0, exp = 0, chk = null, authT = null;
+  const wait = new Map();
+  const put = (o) => { try { server.send(JSON.stringify(o)); } catch { /* socket đã đóng */ } };
+  const fin = (code, why) => {
+    if (closed) return; closed = true;
+    clearInterval(chk); clearTimeout(authT);
+    if (uid) { const n = (ctConns.get(uid) || 1) - 1; n > 0 ? ctConns.set(uid, n) : ctConns.delete(uid); }
+    try { server.close(code, why); } catch {}
+    try { up && up.close(1000, "bye"); } catch {}
+    for (const [, w] of wait) { clearTimeout(w.t); w.rej(new Error("closed")); } wait.clear();
+  };
+  const fail = (id, code, desc) => { put({ clientMsgId: id, payloadType: 50, payload: { errorCode: code, description: desc } }); fin(1008, code); };
+  const call = (type, payload) => new Promise((res, rej) => {
+    const id = "gx" + hex(4), t = setTimeout(() => { wait.delete(id); rej(new Error("timeout")); }, 12000);
+    wait.set(id, { res, rej, t });
+    up.send(JSON.stringify({ clientMsgId: id, payloadType: type, payload }));
+  });
+
+  authT = setTimeout(() => { if (!ready) fin(1008, "auth timeout"); }, 10000);
+  {
+    server.addEventListener("close", () => fin(1000, "client closed"));
+    server.addEventListener("error", () => fin(1011, "client error"));
+    server.addEventListener("message", async (ev) => {
+      if (closed) return;
+      const raw = ev.data;
+      if (typeof raw !== "string" || raw.length > 4096) return fin(1009, "bad message");
+      let m; try { m = JSON.parse(raw); } catch { return fin(1003, "bad json"); }
+      const type = Number(m && m.payloadType), id = m && typeof m.clientMsgId === "string" ? m.clientMsgId.slice(0, 40) : undefined;
+
+      if (!ready) {   // tin đầu tiên bắt buộc là đăng nhập bằng phiên Discord
+        if (authing || type !== 9001) return fin(1008, "auth required");
+        authing = true;
+        try {
+          const miss = ["CT_CLIENT_ID", "CT_CLIENT_SECRET", "CT_ACCESS_TOKEN", "SESSION_SECRET"].filter((k) => !env[k]);
+          if (miss.length) return fail(id, "GX_NOCONF", "Worker chưa cài secret cTrader");
+          const s = await readToken(env, m.payload && m.payload.token);
+          const g = s && await gate(env, db, await db.prepare("SELECT * FROM users WHERE id=?").bind(s.uid).first());
+          if (!g || !g.user) return fail(id, "GX_SESSION", (g && g.err) || "expired");
+          uid = String(s.uid); exp = s.exp;
+          const n = (ctConns.get(uid) || 0) + 1;
+          if (n > CT_MAX_PER_USER) { uid = ""; return fail(id, "GX_LIMIT", "quá nhiều kết nối cTrader đồng thời"); }
+          ctConns.set(uid, n);
+          const host = env.CT_ENV === "demo" ? "demo" : "live";
+          const r = await fetch(`https://${host}.ctraderapi.com:${CT_PORT}`, { headers: { Upgrade: "websocket" } });
+          up = r.webSocket; if (!up) throw new Error("no upstream");
+          up.accept();
+          up.addEventListener("message", (e) => {
+            const d = e.data; if (typeof d !== "string") return;
+            const e2 = ctEdge(d), t = ctPT(e2), cid = ctMid(e2);
+            if (cid) {
+              const w = wait.get(cid);
+              if (w) { wait.delete(cid); clearTimeout(w.t); const p = JSON.parse(d); (t === 2142 || t === 50) ? w.rej(new Error(p.payload && p.payload.errorCode || "ERROR")) : w.res(p.payload || {}); return; }
+              if (ready) server.send(d);                       // trả lời cho request mà client được phép gửi
+            } else if (ready && CT_DOWN_EVT.has(t)) server.send(d);
+            else if (CT_DEAD_EVT.has(t)) { put({ payloadType: 2147, payload: {} }); fin(1011, "upstream revoked"); }
+            // mọi sự kiện khác (execution, margin, trader...) bị bỏ: đó là dữ liệu tài khoản riêng của chủ
+          });
+          up.addEventListener("close", () => fin(1011, "upstream closed"));
+          up.addEventListener("error", () => fin(1011, "upstream error"));
+          await call(2100, { clientId: env.CT_CLIENT_ID, clientSecret: env.CT_CLIENT_SECRET });
+          acc = Math.round(Number(env.CT_ACCOUNT_ID)) || 0;
+          if (!acc) {
+            const L = (await call(2149, { accessToken: env.CT_ACCESS_TOKEN })).ctidTraderAccount || [];
+            const x = L.find((a) => !!a.isLive === (host === "live")) || L[0];
+            if (!x) return fail(id, "GX_UPSTREAM", "tài khoản cTrader của chủ không khả dụng");
+            acc = +x.ctidTraderAccountId;
+          }
+          await call(2102, { ctidTraderAccountId: acc, accessToken: env.CT_ACCESS_TOKEN });
+          ready = true; clearTimeout(authT);
+          // phiên hết hạn / bị đá khỏi server thì cắt luôn, không chờ client tự rời
+          chk = setInterval(async () => {
+            try {
+              if (Date.now() > exp) return fin(1008, "session expired");
+              const g2 = await gate(env, db, await db.prepare("SELECT * FROM users WHERE id=?").bind(uid).first());
+              if (!g2.user) fin(1008, "revoked");
+            } catch { /* lỗi tạm thời: lần sau kiểm lại */ }
+          }, 5 * 60 * 1000);
+          put({ clientMsgId: id, payloadType: 9002, payload: { accountId: acc, env: host } });
+        } catch (e) {
+          console.log("ct auth lỗi", e && e.message);
+          if (!closed) fail(id, "GX_UPSTREAM", "không nối được cTrader");
+        }
+        return;
+      }
+
+      if (!CT_UP_OK.has(type)) return fin(1008, "not allowed");        // chặn mọi lệnh ngoài danh sách (đọc tài khoản, đặt lệnh, đổi token...)
+      const p = m.payload && typeof m.payload === "object" ? m.payload : {};
+      if (type !== 51 && type !== 2104) p.ctidTraderAccountId = acc;   // luôn ép đúng tài khoản của chủ, client không chọn được tài khoản khác
+      if (ctHist.has(type)) {   // chặn 1 kết nối dội request lịch sử làm cạn hạn mức của app (client bình thường chỉ ~4 req/s và tự thử lại khi gặp FREQUENCY)
+        const now = Date.now(); while (hist.length && now - hist[0] > 1000) hist.shift();
+        if (hist.length >= 6) return put({ clientMsgId: id, payloadType: 50, payload: { errorCode: "FREQUENCY", description: "quá nhiều request lịch sử" } });
+        hist.push(now);
+      }
+      try { up.send(JSON.stringify({ clientMsgId: id, payloadType: type, payload: p })); } catch { fin(1011, "upstream send"); }
+    });
+  }
+}
+
+function ctProxy(req, env) {
+  if ((req.headers.get("Upgrade") || "").toLowerCase() !== "websocket") return null;
+  const o = req.headers.get("Origin");
+  if (o && env.FRONTEND_URL) {   // trình duyệt luôn gửi Origin: chỉ nhận từ web của mình (không phải rào cản tuyệt đối, phiên Discord mới là khoá thật)
+    const ok = new URL(env.FRONTEND_URL).origin, www = ok.replace("//www.", "//"), alt = ok.replace("//", "//www.");
+    if (o !== ok && o !== www && o !== alt) return new Response("forbidden", { status: 403 });
+  }
+  const pair = new WebSocketPair();
+  const [client, server] = Object.values(pair);
+  server.accept();
+  ctSession(server, env, env.DB);
+  return new Response(null, { status: 101, webSocket: client });
+}
+
 async function handle(req, env) {
   const need = ["DISCORD_CLIENT_ID", "DISCORD_CLIENT_SECRET", "DISCORD_GUILD_ID", "SESSION_SECRET", "FRONTEND_URL"].filter((k) => !env[k]);
   const front = String(env.FRONTEND_URL || "").replace(/\/+$/, "");
@@ -140,6 +280,8 @@ async function handle(req, env) {
   const path = url.pathname;
   const m = req.method;
   await init(db);
+
+  if (path === "/ct") return ctProxy(req, env) || json({ error: "cần WebSocket" }, 426);
 
   // ================= ĐĂNG NHẬP DISCORD =================
   const CB = `${url.origin}/auth/discord/callback`;

@@ -215,7 +215,7 @@ label small{font-weight:400}
       <h2>Chào mừng trở lại</h2>
       <p class="mut">Đăng nhập để vào nhật ký giao dịch.</p>
       <p class="err" id="authErr" role="alert"></p>
-      <label class="agree" id="agreeBox"><input type="checkbox" id="agreeChk"><span>Tôi đã đọc và đồng ý với <a href="#" id="termsLink">Điều khoản sử dụng</a> và <a href="#" id="privLink">Chính sách dữ liệu</a> của Gexadecimal.</span></label>
+      <label class="agree" id="agreeBox"><input type="checkbox" id="agreeChk"><span>Tôi đã đọc và đồng ý với <a href="#" id="termsLink">Điều khoản sử dụng</a> và <a href="#" id="privLink">Chính sách quyền riêng tư</a> của Gexadecimal.</span></label>
       <a class="btn full dc" id="dcBtn" href="#"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M7.2 6.2C9.9 4.9 14.1 4.9 16.8 6.2c1.8 2.7 2.8 5.9 2.9 9.4-1.4 1.1-2.9 1.8-4.5 2.2l-.9-1.5c.6-.2 1.1-.5 1.6-.8-.2-.1-.4-.3-.5-.4-2.9 1.3-6.1 1.3-9 0-.2.1-.3.3-.5.4.5.3 1 .6 1.6.8l-.9 1.5c-1.6-.4-3.1-1.100-4.5-2.2.1-3.500 1.100-6.700 2.900-9.400z"/><ellipse cx="9" cy="12.600" rx="1.500" ry="1.700" fill="#5865F2"/><ellipse cx="15" cy="12.600" rx="1.500" ry="1.700" fill="#5865F2"/></svg><span>Đăng nhập bằng Discord</span></a>
       <p class="sw">Chỉ dành cho thành viên server Discord của chúng tôi.</p>
     </div></aside><p class="back"><a href="index.html">← Về trang chủ</a></p></main>
@@ -223,8 +223,8 @@ label small{font-weight:400}
 
 <div class="tm" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="tmTitle" hidden>
   <div class="tm-box">
-    <div class="tm-h"><h3 id="tmTitle">Điều khoản sử dụng và Chính sách dữ liệu</h3><button type="button" class="tm-x" id="tmX" aria-label="Đóng">×</button></div>
-    <div class="tm-b"><iframe id="tmFrame" title="Điều khoản sử dụng và Chính sách dữ liệu" src="about:blank"></iframe></div>
+    <div class="tm-h"><h3 id="tmTitle">Điều khoản sử dụng và Chính sách quyền riêng tư</h3><button type="button" class="tm-x" id="tmX" aria-label="Đóng">×</button></div>
+    <div class="tm-b"><iframe id="tmFrame" title="Điều khoản sử dụng và Chính sách quyền riêng tư" src="about:blank"></iframe></div>
     <div class="tm-f"><a class="btn ghost" id="tmOpen" href="terms.html" target="_blank" rel="noopener">Mở trang riêng</a><button type="button" class="btn ghost" id="tmClose">Đóng</button><button type="button" class="btn" id="tmAgree">Tôi đồng ý</button></div>
   </div>
 </div>
@@ -274,7 +274,7 @@ $("#yr").textContent = new Date().getFullYear();
    Nút chuyển sang Worker (/auth/discord/login) -> Discord -> Worker kiểm tra có trong server không
    -> chuyển về app/index.html#token=... (xem app/js/auth.js). Lỗi được Worker gửi về qua ?error=... */
 const API = ((window.GX_CONFIG && window.GX_CONFIG.API_URL) || "").trim().replace(/\/+$/, "");
-const TERMS_VERSION = "2026-10-20-2";   // phải trùng TERMS_VERSION trong worker.js; đổi cả hai khi sửa điều khoản
+const TERMS_VERSION = "2026-10-24-1";   // phải trùng TERMS_VERSION trong worker.js; đổi cả hai khi sửa điều khoản
 $("#dcBtn").href = API + "/auth/discord/login?terms=" + TERMS_VERSION;
 /* Phải tích đồng ý Điều khoản/Chính sách mới được đăng nhập */
 const chk = $("#agreeChk"), box = $("#agreeBox"), dcb = $("#dcBtn");
@@ -283,7 +283,7 @@ chk.addEventListener("change", syncAgree); syncAgree();
 dcb.addEventListener("click", e => {
   if (!chk.checked) {
     e.preventDefault(); box.classList.add("bad"); box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-    $("#authErr").textContent = tr("Bạn cần đồng ý với Điều khoản sử dụng và Chính sách dữ liệu để đăng nhập."); $("#authErr").dataset.agree = "1";
+    $("#authErr").textContent = tr("Bạn cần đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để đăng nhập."); $("#authErr").dataset.agree = "1";
     return;
   }
   dcb.classList.add("dis"); setTimeout(() => dcb.classList.remove("dis"), 8000);
@@ -313,7 +313,7 @@ const AUTH_ERR = {
   not_in_server: "Tài khoản Discord của bạn chưa ở trong server. Hãy tham gia server rồi đăng nhập lại.",
   missing_role: "Tài khoản của bạn chưa có role được phép truy cập. Hãy liên hệ admin server.",
   denied: "Bạn đã huỷ đăng nhập Discord.",
-  terms: "Bạn cần đồng ý với Điều khoản sử dụng và Chính sách dữ liệu để đăng nhập.",
+  terms: "Bạn cần đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để đăng nhập.",
   terms_update: "Điều khoản đã được cập nhật. Vui lòng đọc và đồng ý lại để tiếp tục.",
   expired: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
   other: "Đăng nhập không thành công, vui lòng thử lại."
@@ -328,10 +328,10 @@ const I18N = [
 ["Mở trang riêng","Open full page","打开完整页面"],
 ["Tôi đã đọc và đồng ý với","I have read and agree to the","我已阅读并同意"],
 ["Điều khoản sử dụng","Terms of Use","使用条款"],
-["Chính sách dữ liệu","Data Policy","数据政策"],
+["Chính sách quyền riêng tư","Privacy Policy","隐私政策"],
 ["của Gexadecimal.","of Gexadecimal.","（Gexadecimal）。"],
-["Bạn cần đồng ý với Điều khoản sử dụng và Chính sách dữ liệu để đăng nhập.","You must agree to the Terms of Use and Data Policy to log in.","您需要同意使用条款和数据政策才能登录。"],
-["Điều khoản sử dụng và Chính sách dữ liệu","Terms of Use and Data Policy","使用条款和数据政策"],
+["Bạn cần đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để đăng nhập.","You must agree to the Terms of Use and Privacy Policy to log in.","您需要同意使用条款和隐私政策才能登录。"],
+["Điều khoản sử dụng và Chính sách quyền riêng tư","Terms of Use and Privacy Policy","使用条款和隐私政策"],
 ["Đóng","Close","关闭"],
 ["Tôi đồng ý","I agree","我同意"],
 ["Đăng nhập bằng Discord","Log in with Discord","使用 Discord 登录"],
@@ -413,7 +413,7 @@ function applyLang(first) {
   document.title = titles[LANG]; $('meta[name=description]').content = descs[LANG];
   $$(".err").forEach(e => { e.textContent = ""; e.classList.remove("okm"); });
   renderAuthErr();
-  if (typeof box !== "undefined" && box.classList.contains("bad") && !chk.checked) { $("#authErr").textContent = tr("Bạn cần đồng ý với Điều khoản sử dụng và Chính sách dữ liệu để đăng nhập."); $("#authErr").dataset.agree = "1"; }
+  if (typeof box !== "undefined" && box.classList.contains("bad") && !chk.checked) { $("#authErr").textContent = tr("Bạn cần đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư để đăng nhập."); $("#authErr").dataset.agree = "1"; }
   const mt = $("#f-register .meter"); if (mt) $("#pwHint").textContent = tr(PWHINT[+(mt.dataset.s || 0)]);
   $$("#langMenu li").forEach(li => li.classList.toggle("on", li.dataset.lang === LANG));
   $("#langCur").innerHTML = $('#langMenu li[data-lang="' + LANG + '"] .fl').innerHTML;

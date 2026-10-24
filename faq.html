@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi" data-l="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Câu hỏi thường gặp – Gexadecimal</title>
+<meta name="description" content="Câu hỏi thường gặp về Gexadecimal: đăng nhập Discord, kết nối MT5, cTrader, Footprint, dữ liệu và tài khoản.">
+<style>
+/* Trang FAQ có link cố định. Không nạp Google Fonts để trang này không gửi IP người đọc sang Google. */
+:root{--bgg:radial-gradient(130% 95% at 50% -10%,#2b1c4f 0%,#120c2b 38%,#070514 70%,#020108 100%);--card:rgba(26,19,48,.58);--ink:#fff4d9;--mut:#c4b79a;--line:rgba(244,201,106,.26);--inp:rgba(255,236,190,.06);--acc:#f2c660;color-scheme:dark}
+:root[data-theme="light"]{--bgg:radial-gradient(130% 95% at 50% -10%,#fff6dc 0%,#f6ecff 45%,#efe6fb 75%,#e9e0f6 100%);--card:rgba(255,251,240,.8);--ink:#2a1c06;--mut:#7a6740;--line:rgba(176,116,26,.3);--inp:rgba(255,255,255,.85);--acc:#a8701a;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bgg) fixed;color:var(--ink);font:15px/1.65 "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--acc)}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:sticky;top:0;z-index:5}
+.bar .home{margin-right:auto;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.bar button{font:inherit;font-size:13px;color:var(--mut);background:var(--inp);border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+.bar button.on{color:var(--ink);border-color:var(--acc)}
+main{max-width:800px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:28px;line-height:1.25;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 18px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 6px}
+#q{flex:1;min-width:200px;font:inherit;color:var(--ink);background:var(--inp);border:1px solid var(--line);border-radius:999px;padding:9px 16px;outline:none}
+#q:focus{border-color:var(--acc)}
+.tools button{font:inherit;font-size:13px;color:var(--mut);background:var(--inp);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.tools button:hover{color:var(--ink);border-color:var(--acc)}
+.nav2{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.nav2 a{font-size:13px;text-decoration:none;color:var(--mut);background:var(--inp);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.nav2 a:hover{color:var(--ink);border-color:var(--acc)}
+h2{font-size:16px;margin:28px 0 10px;color:var(--acc);scroll-margin-top:70px}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:0 0 10px;transition:border-color .2s}
+details[open],details:hover{border-color:var(--acc)}
+summary{cursor:pointer;list-style:none;padding:14px 46px 14px 18px;font-weight:700;position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:20px;font-weight:400;color:var(--acc);line-height:1}
+details[open] summary::after{content:"\2212"}
+summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:14px}
+.a{padding:0 18px 14px;color:var(--mut)}.a p{margin:0 0 8px}
+#none{display:none;text-align:center;color:var(--mut);padding:30px 0}
+.cta{margin-top:34px;text-align:center;color:var(--mut)}
+.back{margin-top:22px;text-align:center}
+</style>
+</head>
+<body>
+<div class="bar" role="navigation">
+  <a class="home" href="index.html">Gexadecimal</a>
+  <button type="button" data-l="vi">VI</button><button type="button" data-l="en">EN</button><button type="button" data-l="zh">中文</button>
+  <button type="button" id="th" aria-label="Theme">☀</button>
+</div>
+<main>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="tools"><input id="q" type="search" autocomplete="off"><button type="button" id="ex"></button><button type="button" id="co"></button></div>
+  <div class="nav2" id="nav2"></div>
+  <div id="list"></div>
+  <p id="none"></p>
+  <p class="cta" id="cta"></p>
+  <p class="back"><a id="terms" href="terms.html"></a> · <a id="back" href="index.html"></a></p>
+</main>
+<script src="faq-data.js"></script>
+<script>
+(function () {
+  var root = document.documentElement;
+  function ld(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function sv(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var q = new URLSearchParams(location.search), IX = { vi: 0, en: 1, zh: 2 };
+  var nav = (navigator.language || "vi").slice(0, 2);
+  var lang = q.get("lang") || ld("gx-lang") || (nav === "vi" ? "vi" : nav === "zh" ? "zh" : "en");
+  if (!(lang in IX)) lang = "vi";
+  var theme = q.get("theme") || ld("gx-theme") || "dark";
+  var UI = {
+    title: ["Câu hỏi thường gặp", "Frequently asked questions", "常见问题"],
+    sub: ["Mọi thứ cần biết về Chart / Orderflow, Trading Journal, kết nối MT5 và dữ liệu của bạn.", "Everything you need to know about Chart / Orderflow, the Trading Journal, connecting MT5 and your data.", "关于图表 / Orderflow、交易日志、MT5 连接和你的数据，你需要了解的一切。"],
+    search: ["Tìm câu hỏi…", "Search questions…", "搜索问题…"],
+    ex: ["Mở tất cả", "Expand all", "全部展开"], co: ["Thu gọn tất cả", "Collapse all", "全部收起"],
+    none: ["Không có câu hỏi nào khớp.", "No matching questions.", "没有匹配的问题。"],
+    cta: ["Vẫn chưa tìm thấy câu trả lời? Hỏi trong server Discord của cộng đồng.", "Still can't find your answer? Ask in the community's Discord server.", "还没找到答案？请到社区的 Discord 服务器提问。"],
+    back: ["← Về trang chủ", "← Back to home", "← 返回首页"],
+    terms: ["Điều khoản & Quyền riêng tư", "Terms & Privacy Policy", "使用条款与隐私政策"],
+    doc: ["Câu hỏi thường gặp – Gexadecimal", "FAQ – Gexadecimal", "常见问题 – Gexadecimal"]
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function norm(s) { return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d"); }
+  var rows = [];
+  function build() {
+    var i = IX[lang], list = $("list"), nv = $("nav2"); list.textContent = ""; nv.textContent = ""; rows = [];
+    window.GX_FAQ.forEach(function (g) {
+      var h = el("h2", null, g.t[i]); h.id = g.id; list.appendChild(h);
+      var a = el("a", null, g.t[i]); a.href = "#" + g.id; nv.appendChild(a);
+      g.items.forEach(function (it) {
+        var d = el("details"), s = el("summary", null, it.q[i]), body = el("div", "a");
+        it.a[i].split("\n\n").forEach(function (p) { body.appendChild(el("p", null, p)); });
+        d.appendChild(s); d.appendChild(body); list.appendChild(d);
+        rows.push({ d: d, h: h, t: norm(it.q[i] + " " + it.a[i]) });
+      });
+    });
+    filter();
+  }
+  function filter() {
+    var k = norm($("q").value.trim()), shown = 0, seen = {};
+    rows.forEach(function (r) { var ok = !k || r.t.indexOf(k) >= 0; r.d.hidden = !ok; if (ok) { shown++; seen[r.h.id] = 1; } });
+    rows.forEach(function (r) { r.h.hidden = !seen[r.h.id]; });
+    $("none").style.display = shown ? "none" : "block";
+  }
+  function setLang(l, save) {
+    lang = l; root.dataset.l = l; root.lang = l; var i = IX[l];
+    document.title = UI.doc[i]; $("h1").textContent = UI.title[i]; $("sub").textContent = UI.sub[i];
+    $("q").placeholder = UI.search[i]; $("ex").textContent = UI.ex[i]; $("co").textContent = UI.co[i];
+    $("none").textContent = UI.none[i]; $("cta").textContent = UI.cta[i]; $("back").textContent = UI.back[i]; $("terms").textContent = UI.terms[i];
+    Array.prototype.forEach.call(document.querySelectorAll(".bar button[data-l]"), function (b) { b.classList.toggle("on", b.dataset.l === l); });
+    build(); if (save) sv("gx-lang", l);
+  }
+  function setTheme(t) { root.dataset.theme = t; $("th").textContent = t === "dark" ? "☀" : "🌙"; sv("gx-theme", t); }
+  Array.prototype.forEach.call(document.querySelectorAll(".bar button[data-l]"), function (b) { b.onclick = function () { setLang(b.dataset.l, true); }; });
+  $("th").onclick = function () { setTheme(root.dataset.theme === "dark" ? "light" : "dark"); };
+  $("q").oninput = filter;
+  $("ex").onclick = function () { rows.forEach(function (r) { if (!r.d.hidden) r.d.open = true; }); };
+  $("co").onclick = function () { rows.forEach(function (r) { r.d.open = false; }); };
+  setLang(lang, false); setTheme(theme);
+  if (location.hash) { var t = $(location.hash.slice(1)); if (t) t.scrollIntoView(); }
+})();
+</script>
+</body>
+</html>

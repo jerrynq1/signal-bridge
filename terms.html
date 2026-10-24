@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Điều khoản sử dụng và Chính sách dữ liệu – Gexadecimal</title>
-<meta name="description" content="Điều khoản sử dụng và Chính sách dữ liệu của Gexadecimal.">
+<title>Điều khoản sử dụng và Chính sách quyền riêng tư – Gexadecimal</title>
+<meta name="description" content="Điều khoản sử dụng và Chính sách quyền riêng tư của Gexadecimal: dữ liệu thu thập, nơi lưu trữ, quyền của bạn và giới hạn trách nhiệm.">
 <style>
 /* Trang điều khoản có link cố định. Không nạp Google Fonts để trang này không gửi IP người đọc sang Google. */
 :root{--bgg:radial-gradient(130% 95% at 50% -10%,#2b1c4f 0%,#120c2b 38%,#070514 70%,#020108 100%);--card:rgba(26,19,48,.58);--ink:#fff4d9;--mut:#c4b79a;--line:rgba(244,201,106,.26);--inp:rgba(255,236,190,.06);--acc:#f2c660;color-scheme:dark}
@@ -32,6 +32,9 @@ section{scroll-margin-top:70px}
 .embed main{padding:14px 20px}
 .embed .card{border:0;background:none;padding:0}
 .embed h1{display:none}.embed .ver{margin-bottom:0}
+.sum{background:var(--inp);border:1px solid var(--line);border-radius:12px;padding:6px 16px 8px;margin:14px 0 4px}
+.sum h2{margin-top:10px}
+.part{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);border-top:1px solid var(--line);padding-top:18px;margin-top:30px}
 .embed{font-size:13.5px}
 </style>
 </head>
@@ -43,101 +46,206 @@ section{scroll-margin-top:70px}
 </div>
 <main><div class="card">
 <div class="l" lang="vi">
-<h1>Điều khoản sử dụng và Chính sách dữ liệu</h1>
-<p class="ver">Phiên bản: <b>2026-10-20-2</b></p>
+<h1>Điều khoản sử dụng và Chính sách quyền riêng tư</h1>
+<p class="ver">Phiên bản: <b>2026-10-24-1</b> · Cập nhật lần cuối: 24/10/2026</p>
+<section data-id="summary" class="sum"><h2>Tóm tắt nhanh</h2><ul><li>Gexadecimal miễn phí, chỉ dành cho thành viên server Discord của cộng đồng, đăng nhập bằng Discord.</li><li>Chúng tôi không giao dịch thay bạn, không giữ tiền của bạn và không đưa ra lời khuyên đầu tư. EA chỉ gửi lệnh đã đóng và số dư.</li><li>Footprint, Big Trade và Statistic là số liệu ước lượng từ chuỗi báo giá bid/ask, không phải khối lượng khớp thật của sàn.</li><li>Lệnh MT5 đã đồng bộ lưu trên máy chủ theo tài khoản Discord của bạn. Ghi chú Journal, cài đặt chart và thông tin cTrader chỉ lưu trong trình duyệt của bạn.</li><li>Chúng tôi không bán dữ liệu và không dùng để quảng cáo. Bạn có thể xuất CSV và xoá vĩnh viễn tài khoản bất cứ lúc nào.</li></ul></section>
+<h2 class="part">Phần A. Điều khoản sử dụng</h2>
 <section data-id="s1"><h2>1. Dịch vụ</h2>
-<p>Gexadecimal là nhật ký giao dịch chạy trên trình duyệt, dành riêng cho thành viên server Discord của chúng tôi. Bạn cần đăng nhập bằng Discord và còn trong server (đủ role nếu có yêu cầu) để sử dụng.</p>
+<p>Gexadecimal là một web chạy trên trình duyệt, gồm hai phần dùng chung một tài khoản: (1) Chart / Orderflow, gồm chart, Footprint, Big Trade, Statistic, Volume Profile, TPO, indicator và công cụ vẽ, dùng dữ liệu từ cTrader Open API; (2) Trading Journal, gồm nhật ký giao dịch, Analytic, Flex Card và đồng bộ lệnh đã đóng từ MT5. Dịch vụ dành riêng cho thành viên server Discord của chúng tôi.</p><p>Dịch vụ miễn phí và không có tính năng nào bị khoá sau paywall. Chúng tôi cung cấp dịch vụ theo hiện trạng, không cam kết luôn sẵn sàng hay không có lỗi.</p>
 </section>
-<section data-id="data"><h2>2. Dữ liệu chúng tôi thu thập từ Discord</h2>
-<ul><li>ID, tên hiển thị hoặc biệt danh và ảnh đại diện Discord của bạn.</li><li>Việc bạn có trong server hay không và các role của bạn, chỉ để xác nhận quyền truy cập.</li><li>Chúng tôi không đọc tin nhắn, không xem email và không lấy mật khẩu Discord của bạn.</li></ul>
+<section data-id="s2"><h2>2. Tài khoản và quyền truy cập</h2>
+<ul><li>Bạn đăng nhập bằng Discord và phải còn trong server (đủ role nếu có yêu cầu). Nếu rời server, bị xoá khỏi server hoặc mất role, quyền truy cập bị thu hồi, thường trong khoảng 10 phút, kể cả với EA của bạn.</li><li>Bạn chịu trách nhiệm cho mọi hoạt động dưới tài khoản, phiên đăng nhập trên thiết bị của bạn và EA key của bạn. Hãy đăng xuất trên máy dùng chung.</li><li>Bạn cần đủ tuổi theo pháp luật nơi bạn sinh sống để tự quyết định việc giao dịch tài chính và đồng ý các điều khoản này, đồng thời tuân thủ điều khoản của Discord.</li></ul>
 </section>
-<section data-id="s3"><h2>3. Dữ liệu giao dịch</h2>
-<p>Các lệnh bạn đồng bộ từ MT5 (qua EA và khoá EA riêng của bạn) và ghi chú trong Journal được lưu theo tài khoản Discord của bạn, để hiển thị thống kê và thẻ chiến tích. Dữ liệu cũng có thể được lưu trên trình duyệt của bạn (localStorage).</p>
+<section data-id="s3"><h2>3. Dữ liệu thị trường và các chỉ số</h2>
+<ul><li>Chart lấy dữ liệu trực tiếp từ cTrader Open API bằng thông tin cTrader của chính bạn, nên còn chịu điều khoản của cTrader/Spotware và broker của bạn. Chỉ cần quyền Accounts (chỉ xem), không cần quyền Trading.</li><li>Footprint, Big Trade và Statistic (Delta, CVD) được suy ra từ chuỗi tick bid/ask theo một quy tắc cố định, vì forex/CFD trên cTrader không có tape giao dịch thật. Đây là ước lượng, không phải khối lượng khớp thật của sàn.</li><li>Volume Profile, TPO và indicator là kết quả tính toán từ dữ liệu nến và tick đã tải. Dữ liệu có thể thiếu, trễ hoặc khác với nền tảng khác (lịch sử tick chỉ có vài ngày gần đây tuỳ broker). Chúng tôi không đảm bảo dữ liệu chính xác, đầy đủ hay kịp thời.</li></ul>
 </section>
-<section data-id="s4"><h2>4. Ghi nhận việc đồng ý</h2>
-<p>Khi bạn tích đồng ý và đăng nhập, chúng tôi lưu phiên bản điều khoản và thời điểm bạn đồng ý, gắn với ID Discord của bạn. Việc này nhằm chứng minh bạn đã đồng ý và để yêu cầu bạn đồng ý lại khi điều khoản thay đổi. Chúng tôi không lưu địa chỉ IP của bạn trong bản ghi này.</p>
+<section data-id="s4"><h2>4. Journal và EA MT5</h2>
+<ul><li>EA SignalBridge Journal chỉ gửi lệnh đã đóng và số dư lên Journal. EA không vào lệnh, không sửa và không đóng lệnh của bạn. Bạn tự chịu trách nhiệm khi cài và chạy EA trên tài khoản của mình.</li><li>EA key là bí mật của riêng bạn. Nếu bị lộ, hãy tạo key mới ở mục Kết nối; key cũ sẽ ngừng hoạt động ngay.</li><li>Thống kê, Analytic và quy tắc rủi ro được tính từ dữ liệu bạn đồng bộ hoặc nhập, nên độ chính xác phụ thuộc vào dữ liệu đó. Cảnh báo giới hạn lỗ chỉ để tham khảo, không tự chặn hay đóng lệnh của bạn.</li></ul>
 </section>
-<section data-id="s5"><h2>5. Dịch vụ của bên thứ ba</h2>
-<p>Để vận hành, Gexadecimal dùng các dịch vụ sau. Mỗi bên xử lý dữ liệu theo chính sách riêng của họ:</p>
-<ul><li>Discord: xác thực đăng nhập và kiểm tra bạn có trong server.</li><li>Cloudflare (Workers và D1): xử lý API và lưu dữ liệu tài khoản, lệnh giao dịch.</li><li>GitHub Pages: lưu trữ và phân phối trang web.</li><li>Google Fonts: tải phông chữ. Khi mở trang, trình duyệt của bạn gửi địa chỉ IP và thông tin trình duyệt tới Google; chúng tôi không kiểm soát dữ liệu này.</li></ul>
+<section data-id="s5"><h2>5. Sử dụng được phép</h2>
+<p>Bạn đồng ý không:</p><ul><li>chia sẻ tài khoản, phiên đăng nhập hoặc EA key cho người khác, hay dùng của người khác;</li><li>vượt qua cơ chế kiểm soát truy cập, hoặc làm quá tải, dò quét, tấn công API và hạ tầng của dịch vụ;</li><li>dùng dịch vụ vào mục đích trái pháp luật, hoặc dùng Flex Card và số liệu để giả mạo kết quả giao dịch nhằm lừa dối người khác.</li></ul><p>Nếu vi phạm, chúng tôi có thể tạm khoá hoặc thu hồi quyền truy cập của bạn.</p>
 </section>
-<section data-id="s6"><h2>6. Cách sử dụng và chia sẻ</h2>
-<p>Dữ liệu chỉ dùng để vận hành và cải thiện Gexadecimal. Chúng tôi không bán dữ liệu của bạn và không chia sẻ cho bên thứ ba, ngoài các dịch vụ hạ tầng nêu ở mục 5 hoặc khi pháp luật yêu cầu.</p>
+<section data-id="s6"><h2>6. Nội dung của bạn và quyền sở hữu</h2>
+<ul><li>Dữ liệu giao dịch, ghi chú và nội dung bạn tạo vẫn thuộc về bạn. Bạn cho phép chúng tôi xử lý dữ liệu đó trong phạm vi cần thiết để vận hành dịch vụ cho bạn.</li><li>Flex Card được tạo ngay trong trình duyệt của bạn; việc có chia sẻ ảnh hay không do bạn quyết định. Thẻ có thể chứa số liệu lãi/lỗ của bạn, hãy xem lại trước khi đăng. Flex Card không phải bản sao kê hay bằng chứng chính thức về hiệu suất.</li><li>Tên, logo, giao diện và mã nguồn của Gexadecimal thuộc về chủ sở hữu dịch vụ; các nhãn hiệu của bên thứ ba (Discord, cTrader, MetaTrader…) thuộc về chủ sở hữu tương ứng.</li></ul>
 </section>
-<section data-id="s7"><h2>7. Quyền của bạn</h2>
-<p>Bạn có thể đăng xuất bất cứ lúc nào, đặt lại khoá EA, hoặc tự xoá vĩnh viễn tài khoản và toàn bộ dữ liệu bằng nút "Xoá tài khoản" ở mục Kết nối sau khi đăng nhập. Nếu rời server hoặc mất role, quyền truy cập sẽ bị thu hồi.</p>
+<section data-id="s7"><h2>7. Ủng hộ tự nguyện</h2>
+<p>Mục “Mời cà phê” hoàn toàn tự nguyện, không phải điều kiện để dùng dịch vụ và không thay đổi quyền lợi của bạn. Việc chuyển tiền (chuyển khoản ngân hàng hoặc PayPal) do bạn tự quyết định và tuân theo điều khoản của bên cung cấp dịch vụ thanh toán đó.</p>
 </section>
-<section data-id="s8"><h2>8. Miễn trừ rủi ro</h2>
-<p>Giao dịch có rủi ro. Nội dung và số liệu chỉ mang tính tham khảo, không phải lời khuyên đầu tư. Bạn tự chịu trách nhiệm cho mọi quyết định giao dịch của mình.</p>
+<section data-id="s8"><h2>8. Thay đổi và gián đoạn dịch vụ</h2>
+<p>Chúng tôi có thể thay đổi, bảo trì, tạm dừng hoặc ngừng một phần hay toàn bộ dịch vụ. Ghi chú Journal, cài đặt chart và hình vẽ nằm trong trình duyệt nên sẽ mất nếu bạn xoá dữ liệu trình duyệt hoặc đổi máy. Hãy xuất CSV định kỳ để sao lưu.</p>
 </section>
-<section data-id="s9"><h2>9. Thay đổi</h2>
-<p>Chúng tôi có thể cập nhật điều khoản này. Khi nội dung thay đổi, bạn sẽ được yêu cầu đọc và đồng ý lại trước khi tiếp tục sử dụng.</p>
+<section data-id="s9"><h2>9. Miễn trừ rủi ro và giới hạn trách nhiệm</h2>
+<ul><li>Giao dịch có rủi ro, có thể mất một phần hoặc toàn bộ vốn. Gexadecimal không phải sàn hay broker, không giữ tiền, không thực hiện giao dịch và không đưa ra lời khuyên đầu tư. Nội dung và số liệu chỉ mang tính tham khảo; bạn tự chịu trách nhiệm cho mọi quyết định giao dịch của mình.</li><li>Trong phạm vi pháp luật cho phép, chúng tôi không chịu trách nhiệm về thiệt hại phát sinh từ quyết định giao dịch của bạn, dữ liệu sai hoặc chậm, gián đoạn dịch vụ, hoặc mất dữ liệu (kể cả dữ liệu lưu trong trình duyệt).</li></ul>
+</section>
+<section data-id="s10"><h2>10. Chấm dứt</h2>
+<p>Bạn có thể ngừng dùng dịch vụ và tự xoá tài khoản bất cứ lúc nào (xem mục B8). Chúng tôi có thể tạm khoá hoặc chấm dứt quyền truy cập nếu bạn vi phạm điều khoản này hoặc khi dịch vụ ngừng hoạt động.</p>
+</section>
+<section data-id="s11"><h2>11. Thay đổi điều khoản</h2>
+<p>Chúng tôi có thể cập nhật Điều khoản và Chính sách này. Mỗi phiên bản có một mã phiên bản; khi nội dung thay đổi, bạn sẽ được yêu cầu đọc và đồng ý lại trước khi tiếp tục sử dụng.</p>
+</section>
+<h2 class="part">Phần B. Chính sách quyền riêng tư</h2>
+<section data-id="data"><h2>B1. Dữ liệu chúng tôi thu thập</h2>
+<p>Từ Discord (quyền identify và guilds.members.read):</p><ul><li>ID, tên hiển thị hoặc biệt danh và ảnh đại diện Discord của bạn.</li><li>Việc bạn có trong server hay không và các role của bạn, chỉ để xác nhận quyền truy cập.</li><li>Chúng tôi không đọc tin nhắn, không xem email và không lấy mật khẩu Discord của bạn.</li></ul><p>Từ EA MT5 và tài khoản của bạn:</p><ul><li>Lệnh đã đóng bạn đồng ý đồng bộ: mã tài khoản MT5, mã giao dịch, chiều lệnh, khối lượng, thời gian và giá vào/ra, SL, TP, lãi/lỗ, phí, swap, magic, comment, lý do đóng; cùng số dư và thông tin tài khoản MT5 mới nhất.</li><li>Thông tin tài khoản: EA key ngẫu nhiên của bạn, thời điểm tạo tài khoản, lần đăng nhập gần nhất và lần kiểm tra thành viên gần nhất.</li><li>Bản ghi đồng ý: phiên bản điều khoản và thời điểm bạn đồng ý, gắn với ID Discord của bạn, để chứng minh bạn đã đồng ý và yêu cầu đồng ý lại khi điều khoản đổi. Bản ghi này không chứa địa chỉ IP.</li></ul><p>Chúng tôi không dùng công cụ phân tích hành vi (analytics), không đặt cookie quảng cáo và không theo dõi bạn giữa các trang web.</p>
+</section>
+<section data-id="b2"><h2>B2. Dữ liệu chỉ lưu trong trình duyệt của bạn</h2>
+<ul><li>Phiên đăng nhập (mặc định hết hạn sau 7 ngày), ngôn ngữ và giao diện sáng/tối.</li><li>Dữ liệu Journal nhập tay, ghi chú, setup, cảm xúc, cài đặt Journal; cài đặt chart, mã, khung giờ, indicator và hình vẽ của từng chart.</li><li>Thông tin cTrader (Client ID, Client Secret, Access Token). Các giá trị này chỉ nằm trong trình duyệt và được trình duyệt gửi thẳng tới cTrader Open API; chúng không được gửi lên máy chủ của Gexadecimal.</li><li>Một cookie tạm thời (gx_state, tối đa 10 phút, HttpOnly) chỉ dùng trong lúc đăng nhập Discord để chống giả mạo yêu cầu.</li></ul><p>Vì vậy, xoá dữ liệu trình duyệt hoặc đổi máy sẽ làm mất nhóm dữ liệu này (lệnh MT5 đã đồng bộ vẫn còn trên máy chủ). Trên máy dùng chung, hãy đăng xuất và xoá dữ liệu trang.</p>
+</section>
+<section data-id="b3"><h2>B3. Mục đích sử dụng</h2>
+<ul><li>Xác thực đăng nhập, kiểm tra bạn còn là thành viên server và đủ role.</li><li>Lưu và hiển thị lệnh, thống kê, Analytic, Flex Card của riêng bạn.</li><li>Ghi nhận việc đồng ý điều khoản, bảo vệ và vận hành, sửa lỗi, cải thiện dịch vụ.</li></ul><p>Chúng tôi không bán dữ liệu của bạn và không dùng nó để quảng cáo hay lập hồ sơ về bạn.</p>
+</section>
+<section data-id="b4"><h2>B4. Dịch vụ của bên thứ ba</h2>
+<p>Để vận hành, Gexadecimal dùng các dịch vụ sau. Mỗi bên xử lý dữ liệu theo chính sách riêng của họ:</p><ul><li>Discord: xác thực đăng nhập và kiểm tra bạn có trong server.</li><li>Cloudflare (Workers và D1): chạy API và lưu dữ liệu tài khoản, lệnh giao dịch. Cloudflare có thể xử lý dữ liệu kỹ thuật như địa chỉ IP để cung cấp dịch vụ.</li><li>GitHub Pages: lưu trữ và phân phối trang web.</li><li>Google Fonts và jsDelivr (CDN): tải phông chữ và thư viện biểu đồ. Khi mở trang chủ, trang đăng nhập hoặc app, trình duyệt của bạn gửi địa chỉ IP và thông tin trình duyệt tới các bên này; chúng tôi không kiểm soát dữ liệu đó. Trang Điều khoản này không tải phông chữ ngoài.</li><li>cTrader Open API (Spotware) và broker của bạn: nhận thông tin cTrader bạn nhập, trực tiếp từ trình duyệt của bạn.</li><li>Ngân hàng hoặc PayPal: chỉ khi bạn tự chọn ủng hộ.</li></ul>
+</section>
+<section data-id="b5"><h2>B5. Chia sẻ dữ liệu</h2>
+<p>Journal của bạn chỉ đọc được bằng phiên đăng nhập hoặc EA key của chính bạn. Chúng tôi không chia sẻ dữ liệu cho bên thứ ba, ngoài các dịch vụ hạ tầng ở mục B4 hoặc khi pháp luật yêu cầu. Người vận hành có quyền truy cập kỹ thuật vào cơ sở dữ liệu để vận hành, bảo trì và hỗ trợ; chúng tôi không xem dữ liệu của bạn vì mục đích khác.</p>
+</section>
+<section data-id="b6"><h2>B6. Thời gian lưu giữ</h2>
+<ul><li>Dữ liệu trên máy chủ được giữ cho tới khi bạn xoá tài khoản hoặc dịch vụ ngừng hoạt động.</li><li>Phiên đăng nhập hết hạn sau 7 ngày (mặc định). Khi bạn tạo key mới kèm xoá dữ liệu cũ, các lệnh MT5 đã đồng bộ bị xoá ngay.</li><li>Dữ liệu trong trình duyệt nằm trên thiết bị của bạn cho tới khi bạn xoá.</li></ul>
+</section>
+<section data-id="b7"><h2>B7. Bảo mật</h2>
+<p>Kết nối tới dịch vụ dùng HTTPS. Phiên đăng nhập được ký, mỗi người có EA key riêng, dữ liệu được tách theo tài khoản Discord và việc còn là thành viên server được kiểm tra lại định kỳ. Không hệ thống nào an toàn tuyệt đối, vì vậy hãy giữ bí mật EA key, thông tin cTrader và bảo vệ thiết bị của bạn.</p>
+</section>
+<section data-id="b8"><h2>B8. Quyền của bạn</h2>
+<ul><li>Đăng xuất bất cứ lúc nào.</li><li>Xuất toàn bộ lệnh ra CSV ở trang Journal để lưu trữ hoặc mang đi.</li><li>Tạo key EA mới ở mục Kết nối (có thể kèm xoá lệnh MT5 đã đồng bộ).</li><li>Tự xoá vĩnh viễn tài khoản và toàn bộ dữ liệu trên máy chủ bằng nút “Xoá tài khoản” ở mục Kết nối. Thao tác có hai bước xác nhận, không thể khôi phục, và xoá cả bản ghi đồng ý. Sau đó hãy gỡ EA khỏi MT5. Nếu vẫn ở trong server, đăng nhập lại sẽ tạo tài khoản mới trống và bạn phải đồng ý lại.</li><li>Xoá dữ liệu trong trình duyệt bất cứ lúc nào bằng cách xoá dữ liệu trang.</li></ul><p>Tuỳ pháp luật nơi bạn sinh sống, bạn có thể có thêm quyền (truy cập, chỉnh sửa, phản đối xử lý). Hãy liên hệ chúng tôi theo mục B9.</p>
+</section>
+<section data-id="b9"><h2>B9. Liên hệ</h2>
+<p>Nếu có câu hỏi về điều khoản này hoặc về dữ liệu của bạn, hãy hỏi trong server Discord của cộng đồng.</p>
 </section>
 <p class="back"><a href="login.html">← Về trang đăng nhập</a></p>
 </div>
 <div class="l" lang="en">
-<h1>Terms of Use and Data Policy</h1>
-<p class="ver">Version: <b>2026-10-20-2</b></p>
+<h1>Terms of Use and Privacy Policy</h1>
+<p class="ver">Version: <b>2026-10-24-1</b> · Last updated: 24 Oct 2026</p>
+<section data-id="summary" class="sum"><h2>Quick summary</h2><ul><li>Gexadecimal is free and reserved for members of the community's Discord server, with Discord login.</li><li>We do not trade for you, hold your money or give investment advice. The EA only sends closed trades and your balance.</li><li>Footprint, Big Trade and Statistic are estimates built from the bid/ask quote stream, not real exchange trade volume.</li><li>Synced MT5 trades are stored on our server under your Discord account. Journal notes, chart settings and cTrader credentials stay in your own browser only.</li><li>We do not sell your data or use it for advertising. You can export CSV and permanently delete your account at any time.</li></ul></section>
+<h2 class="part">Part A. Terms of Use</h2>
 <section data-id="s1"><h2>1. The service</h2>
-<p>Gexadecimal is a browser-based trading journal reserved for members of our Discord server. You must log in with Discord and still be in the server (with the required role, if any) to use it.</p>
+<p>Gexadecimal is a browser-based web app with two parts under one account: (1) Chart / Orderflow, with charts, Footprint, Big Trade, Statistic, Volume Profile, TPO, indicators and drawing tools, using data from the cTrader Open API; (2) a Trading Journal, with a trade log, Analytics, Flex Cards and syncing of closed trades from MT5. The service is reserved for members of our Discord server.</p><p>The service is free and no feature is locked behind a paywall. We provide it as is, without promising it will always be available or error-free.</p>
 </section>
-<section data-id="data"><h2>2. Data we collect from Discord</h2>
-<ul><li>Your Discord ID, display name or nickname, and avatar.</li><li>Whether you are in the server and your roles, solely to verify access.</li><li>We do not read your messages, see your email, or obtain your Discord password.</li></ul>
+<section data-id="s2"><h2>2. Account and access</h2>
+<ul><li>You log in with Discord and must remain in the server (with the required role, if any). If you leave, are removed, or lose the role, access is revoked, usually within about 10 minutes, including for your EA.</li><li>You are responsible for all activity under your account, the login session on your devices and your EA key. Log out on shared computers.</li><li>You must be of legal age where you live to make your own financial trading decisions and accept these terms, and you must follow Discord's own terms.</li></ul>
 </section>
-<section data-id="s3"><h2>3. Trading data</h2>
-<p>Trades you sync from MT5 (via the EA and your personal EA key) and your Journal notes are stored under your Discord account to show statistics and achievement cards. Data may also be stored in your browser (localStorage).</p>
+<section data-id="s3"><h2>3. Market data and indicators</h2>
+<ul><li>Charts pull data directly from the cTrader Open API using your own cTrader credentials, so cTrader/Spotware's and your broker's terms also apply. Only the Accounts scope (read-only) is needed, not Trading.</li><li>Footprint, Big Trade and Statistic (Delta, CVD) are derived from the bid/ask tick stream by a fixed rule, because forex/CFD on cTrader has no real trade tape. They are estimates, not real exchange trade volume.</li><li>Volume Profile, TPO and indicators are calculated from the candle and tick data that was loaded. Data may be missing, delayed or differ from other platforms (tick history is only available for recent days, depending on the broker). We do not guarantee that it is accurate, complete or timely.</li></ul>
 </section>
-<section data-id="s4"><h2>4. Record of your consent</h2>
-<p>When you tick the box and log in, we store the version of the terms and the time you agreed, linked to your Discord ID. This lets us show that you agreed and ask you to agree again when the terms change. We do not store your IP address in this record.</p>
+<section data-id="s4"><h2>4. Journal and the MT5 EA</h2>
+<ul><li>The SignalBridge Journal EA only sends closed trades and your balance to the Journal. It never opens, modifies or closes your orders. You are responsible for installing and running the EA on your own account.</li><li>Your EA key is a secret that belongs to you. If it leaks, create a new key in the Connection section; the old key stops working immediately.</li><li>Statistics, Analytics and risk rules are calculated from the data you sync or enter, so their accuracy depends on that data. Loss-limit warnings are informational only and never block or close your trades.</li></ul>
 </section>
-<section data-id="s5"><h2>5. Third-party services</h2>
-<p>To operate, Gexadecimal relies on the following services. Each handles data under its own policy:</p>
-<ul><li>Discord: login authentication and checking that you are in the server.</li><li>Cloudflare (Workers and D1): runs the API and stores account and trade data.</li><li>GitHub Pages: hosts and serves the website.</li><li>Google Fonts: loads typefaces. When you open a page, your browser sends your IP address and browser information to Google; we do not control this data.</li></ul>
+<section data-id="s5"><h2>5. Acceptable use</h2>
+<p>You agree not to:</p><ul><li>share your account, session or EA key with others, or use someone else's;</li><li>bypass access controls, or overload, scan or attack the service's API and infrastructure;</li><li>use the service for unlawful purposes, or use Flex Cards and figures to fake trading results in order to deceive others.</li></ul><p>If you break these rules, we may suspend or revoke your access.</p>
 </section>
-<section data-id="s6"><h2>6. Use and sharing</h2>
-<p>Data is used only to operate and improve Gexadecimal. We do not sell your data or share it with third parties, other than the infrastructure services listed in section 5 or when required by law.</p>
+<section data-id="s6"><h2>6. Your content and ownership</h2>
+<ul><li>Your trading data, notes and the content you create remain yours. You allow us to process them only as needed to run the service for you.</li><li>Flex Cards are generated in your own browser; whether to share an image is up to you. A card may show your profit/loss figures, so review it before posting. A Flex Card is not an official statement or proof of performance.</li><li>The Gexadecimal name, logo, design and code belong to the service owner; third-party trademarks (Discord, cTrader, MetaTrader…) belong to their respective owners.</li></ul>
 </section>
-<section data-id="s7"><h2>7. Your rights</h2>
-<p>You can log out at any time, reset your EA key, or permanently delete your account and all your data with the "Delete account" button in the Connection section after logging in. If you leave the server or lose the role, your access will be revoked.</p>
+<section data-id="s7"><h2>7. Voluntary support</h2>
+<p>The “Buy me a coffee” section is entirely voluntary, is not required to use the service and does not change what you get. Any payment (bank transfer or PayPal) is your own decision and is governed by that payment provider's terms.</p>
 </section>
-<section data-id="s8"><h2>8. Risk disclaimer</h2>
-<p>Trading involves risk. Content and figures are for reference only and are not investment advice. You are solely responsible for your own trading decisions.</p>
+<section data-id="s8"><h2>8. Changes and interruptions</h2>
+<p>We may change, maintain, pause or discontinue all or part of the service. Journal notes, chart settings and drawings live in your browser, so they are lost if you clear browser data or switch devices. Please export CSV regularly as a backup.</p>
 </section>
-<section data-id="s9"><h2>9. Changes</h2>
-<p>We may update these terms. When the content changes, you will be asked to read and accept it again before continuing to use the service.</p>
+<section data-id="s9"><h2>9. Risk disclaimer and limitation of liability</h2>
+<ul><li>Trading involves risk and you may lose some or all of your capital. Gexadecimal is not an exchange or broker, holds no funds, executes no trades and gives no investment advice. Content and figures are for reference only; you are solely responsible for your own trading decisions.</li><li>To the extent permitted by law, we are not liable for losses arising from your trading decisions, wrong or delayed data, service interruptions, or data loss (including data stored in your browser).</li></ul>
+</section>
+<section data-id="s10"><h2>10. Termination</h2>
+<p>You may stop using the service and delete your account at any time (see B8). We may suspend or end your access if you breach these terms or if the service shuts down.</p>
+</section>
+<section data-id="s11"><h2>11. Changes to these terms</h2>
+<p>We may update these Terms and this Policy. Each version has a version code; when the content changes, you will be asked to read and accept it again before continuing to use the service.</p>
+</section>
+<h2 class="part">Part B. Privacy Policy</h2>
+<section data-id="data"><h2>B1. Data we collect</h2>
+<p>From Discord (identify and guilds.members.read scopes):</p><ul><li>Your Discord ID, display name or nickname, and avatar.</li><li>Whether you are in the server and your roles, solely to verify access.</li><li>We do not read your messages, see your email, or obtain your Discord password.</li></ul><p>From the MT5 EA and your account:</p><ul><li>Closed trades you choose to sync: MT5 account number, trade IDs, side, volume, open/close time and price, SL, TP, profit, commission, swap, fees, magic number, comment and close reason; plus your latest balance and MT5 account details.</li><li>Account details: your random EA key, when the account was created, your last login and the last membership check.</li><li>Consent record: the version of the terms and the time you agreed, linked to your Discord ID, to show you agreed and to ask again when the terms change. This record does not contain your IP address.</li></ul><p>We do not use analytics tools, advertising cookies or cross-site tracking.</p>
+</section>
+<section data-id="b2"><h2>B2. Data stored only in your browser</h2>
+<ul><li>Your login session (expires after 7 days by default), language and light/dark theme.</li><li>Manually entered Journal data, notes, setups, emotions and Journal settings; chart settings, symbols, timeframes, indicators and drawings for each chart.</li><li>Your cTrader details (Client ID, Client Secret, Access Token). They stay in your browser and are sent by your browser straight to the cTrader Open API; they are not sent to Gexadecimal's server.</li><li>One temporary cookie (gx_state, up to 10 minutes, HttpOnly) used only during Discord login to prevent request forgery.</li></ul><p>So clearing browser data or switching devices will remove this group of data (synced MT5 trades remain on the server). On a shared computer, log out and clear the site data.</p>
+</section>
+<section data-id="b3"><h2>B3. How we use data</h2>
+<ul><li>Authenticate your login and check that you are still a server member with the right role.</li><li>Store and show your own trades, statistics, Analytics and Flex Cards.</li><li>Record your consent to the terms, secure and operate the service, fix bugs and improve it.</li></ul><p>We do not sell your data or use it for advertising or profiling you.</p>
+</section>
+<section data-id="b4"><h2>B4. Third-party services</h2>
+<p>To operate, Gexadecimal relies on the following services. Each handles data under its own policy:</p><ul><li>Discord: login authentication and checking that you are in the server.</li><li>Cloudflare (Workers and D1): runs the API and stores account and trade data. Cloudflare may process technical data such as IP addresses to deliver the service.</li><li>GitHub Pages: hosts and serves the website.</li><li>Google Fonts and jsDelivr (CDN): load typefaces and the chart library. When you open the home page, log-in page or app, your browser sends its IP address and browser information to them; we do not control this data. This Terms page does not load external fonts.</li><li>cTrader Open API (Spotware) and your broker: receive the cTrader details you enter, directly from your browser.</li><li>Your bank or PayPal: only if you choose to support us.</li></ul>
+</section>
+<section data-id="b5"><h2>B5. Sharing</h2>
+<p>Your Journal can only be read with your own login session or EA key. We do not share data with third parties other than the infrastructure services in B4 or when required by law. The operator has technical access to the database to run, maintain and support the service; we do not look at your data for any other purpose.</p>
+</section>
+<section data-id="b6"><h2>B6. Retention</h2>
+<ul><li>Server data is kept until you delete your account or the service shuts down.</li><li>Login sessions expire after 7 days (default). When you create a new key and choose to wipe old data, your synced MT5 trades are deleted immediately.</li><li>Data in your browser stays on your device until you clear it.</li></ul>
+</section>
+<section data-id="b7"><h2>B7. Security</h2>
+<p>Connections to the service use HTTPS. Login sessions are signed, each person has their own EA key, data is separated by Discord account, and server membership is re-checked periodically. No system is perfectly secure, so keep your EA key and cTrader details secret and protect your device.</p>
+</section>
+<section data-id="b8"><h2>B8. Your rights</h2>
+<ul><li>Log out at any time.</li><li>Export all your trades to CSV on the Journal page to keep or take elsewhere.</li><li>Create a new EA key in the Connection section (optionally wiping the synced MT5 trades).</li><li>Permanently delete your account and all server-side data with the “Delete account” button in the Connection section. It has two confirmation steps, cannot be undone, and also removes your consent record. Afterwards, remove the EA from MT5. If you are still in the server, logging in again creates a new empty account and you must accept the terms again.</li><li>Clear the data in your browser at any time by clearing the site data.</li></ul><p>Depending on the law where you live, you may have further rights (access, correction, objection to processing). Please contact us as described in B9.</p>
+</section>
+<section data-id="b9"><h2>B9. Contact</h2>
+<p>If you have questions about these terms or your data, ask in the community's Discord server.</p>
 </section>
 <p class="back"><a href="login.html">← Back to log in</a></p>
 </div>
 <div class="l" lang="zh">
-<h1>使用条款和数据政策</h1>
-<p class="ver">版本: <b>2026-10-20-2</b></p>
+<h1>使用条款和隐私政策</h1>
+<p class="ver">版本: <b>2026-10-24-1</b> · 最后更新：2026 年 10 月 24 日</p>
+<section data-id="summary" class="sum"><h2>简要说明</h2><ul><li>Gexadecimal 免费，仅限社区 Discord 服务器成员，通过 Discord 登录。</li><li>我们不会代你交易，不保管你的资金，也不提供投资建议。EA 只发送已平仓订单与余额。</li><li>Footprint、Big Trade 与 Statistic 是根据买卖报价序列推算的估计值，并非交易所的真实成交量。</li><li>已同步的 MT5 订单按你的 Discord 账号保存在我们的服务器上。日志笔记、图表设置与 cTrader 凭据只保存在你自己的浏览器中。</li><li>我们不会出售你的数据，也不会用于广告。你可以随时导出 CSV 并永久删除账号。</li></ul></section>
+<h2 class="part">A 部分：使用条款</h2>
 <section data-id="s1"><h2>1. 服务内容</h2>
-<p>Gexadecimal 是运行在浏览器中的交易日志，仅供我们 Discord 服务器成员使用。您需要使用 Discord 登录，并且仍在服务器中（如有要求，还需拥有相应角色）。</p>
+<p>Gexadecimal 是运行在浏览器中的网页应用，一个账号包含两部分：(1) 图表 / Orderflow，包括图表、Footprint、Big Trade、Statistic、Volume Profile、TPO、指标与绘图工具，使用 cTrader Open API 的数据；(2) 交易日志，包括交易记录、Analytic、Flex Card 以及同步 MT5 已平仓订单。本服务仅供我们 Discord 服务器成员使用。</p><p>本服务免费，没有任何功能需要付费解锁。我们按现状提供服务，不保证始终可用或没有错误。</p>
 </section>
-<section data-id="data"><h2>2. 我们从 Discord 收集的数据</h2>
-<ul><li>您的 Discord ID、显示名称或昵称以及头像。</li><li>您是否在服务器中以及您的角色，仅用于验证访问权限。</li><li>我们不会读取您的消息、查看您的邮箱，也不会获取您的 Discord 密码。</li></ul>
+<section data-id="s2"><h2>2. 账号与访问权限</h2>
+<ul><li>你通过 Discord 登录，并须仍在服务器中（如有要求，还需拥有相应角色）。若你退出、被移出或失去角色，访问权限将被撤销，通常在约 10 分钟内生效，包括你的 EA。</li><li>你须对账号下的所有活动、你设备上的登录会话以及你的 EA 密钥负责。在公用电脑上请务必退出登录。</li><li>你须达到居住地法律规定的年龄，能够自行做出金融交易决定并同意本条款，同时遵守 Discord 的条款。</li></ul>
 </section>
-<section data-id="s3"><h2>3. 交易数据</h2>
-<p>您从 MT5 同步的订单（通过 EA 和您专属的 EA 密钥）以及日志笔记会按您的 Discord 账号保存，用于展示统计数据和战绩卡。数据也可能保存在您的浏览器中（localStorage）。</p>
+<section data-id="s3"><h2>3. 市场数据与指标</h2>
+<ul><li>图表使用你自己的 cTrader 凭据直接从 cTrader Open API 获取数据，因此同时适用 cTrader/Spotware 及你的经纪商的条款。只需 Accounts（只读）权限，无需 Trading 权限。</li><li>Footprint、Big Trade 与 Statistic（Delta、CVD）由买卖报价 tick 序列按固定规则推算，因为 cTrader 的外汇/CFD 没有真实成交明细。它们是估计值，并非交易所的真实成交量。</li><li>Volume Profile、TPO 与指标均由已加载的K线和 tick 数据计算得出。数据可能缺失、延迟，或与其他平台不同（tick 历史仅有最近几天，取决于经纪商）。我们不保证数据准确、完整或及时。</li></ul>
 </section>
-<section data-id="s4"><h2>4. 同意记录</h2>
-<p>当您勾选同意并登录时，我们会记录您同意的条款版本和时间，并与您的 Discord ID 关联。这样既可证明您已同意，也能在条款变更时要求您重新同意。该记录中不包含您的 IP 地址。</p>
+<section data-id="s4"><h2>4. 交易日志与 MT5 EA</h2>
+<ul><li>SignalBridge Journal EA 只会向日志发送已平仓订单与余额。它不会开仓、修改或平仓你的订单。在你的账户上安装和运行 EA 由你自行负责。</li><li>EA 密钥是你个人的机密。若泄露，请在“连接”页面生成新密钥，旧密钥会立即失效。</li><li>统计、Analytic 与风险规则均基于你同步或录入的数据计算，其准确性取决于这些数据。亏损上限提醒仅供参考，不会拦截或平掉你的订单。</li></ul>
 </section>
-<section data-id="s5"><h2>5. 第三方服务</h2>
-<p>为了运行，Gexadecimal 使用以下服务，各方按其自身政策处理数据：</p>
-<ul><li>Discord：登录验证，并检查您是否在服务器中。</li><li>Cloudflare（Workers 和 D1）：运行 API，并存储账号与交易数据。</li><li>GitHub Pages：托管并提供网站访问。</li><li>Google Fonts：加载字体。打开页面时，您的浏览器会向 Google 发送 IP 地址和浏览器信息，我们无法控制这些数据。</li></ul>
+<section data-id="s5"><h2>5. 使用规范</h2>
+<p>你同意不得：</p><ul><li>将你的账号、会话或 EA 密钥分享给他人，或使用他人的；</li><li>绕过访问控制，或对服务的 API 与基础设施进行过载、扫描或攻击；</li><li>将服务用于违法目的，或利用 Flex Card 和数据伪造交易结果以欺骗他人。</li></ul><p>若违反上述规则，我们可能会暂停或撤销你的访问权限。</p>
 </section>
-<section data-id="s6"><h2>6. 使用与共享</h2>
-<p>数据仅用于运营和改进 Gexadecimal。除第 5 节所列的基础设施服务或法律要求外，我们不会出售您的数据，也不会与第三方共享。</p>
+<section data-id="s6"><h2>6. 你的内容与所有权</h2>
+<ul><li>你的交易数据、笔记和你创建的内容仍归你所有。你允许我们仅在为你运营服务所必需的范围内处理这些数据。</li><li>Flex Card 在你自己的浏览器中生成，是否分享图片由你决定。卡片可能包含你的盈亏数据，发布前请先检查。Flex Card 不是正式对账单，也不是业绩证明。</li><li>Gexadecimal 的名称、标志、界面与代码归服务所有者所有；第三方商标（Discord、cTrader、MetaTrader 等）归其各自所有者。</li></ul>
 </section>
-<section data-id="s7"><h2>7. 您的权利</h2>
-<p>您可以随时退出登录、重置 EA 密钥，或登录后在“连接”页面点击“删除账号”按钮，永久删除账号和全部数据。若退出服务器或失去角色，访问权限将被撤销。</p>
+<section data-id="s7"><h2>7. 自愿支持</h2>
+<p>“请我喝杯咖啡”完全自愿，不是使用服务的条件，也不会改变你的权益。任何付款（银行转账或 PayPal）均由你自行决定，并受相应支付服务商的条款约束。</p>
 </section>
-<section data-id="s8"><h2>8. 风险免责声明</h2>
-<p>交易有风险。内容和数据仅供参考，不构成投资建议。您需自行对所有交易决策负责。</p>
+<section data-id="s8"><h2>8. 服务变更与中断</h2>
+<p>我们可能会变更、维护、暂停或终止全部或部分服务。日志笔记、图表设置与绘图保存在你的浏览器中，清除浏览器数据或更换设备后会丢失。请定期导出 CSV 作为备份。</p>
 </section>
-<section data-id="s9"><h2>9. 变更</h2>
-<p>我们可能会更新这些条款。内容变更后，您需要重新阅读并同意，方可继续使用。</p>
+<section data-id="s9"><h2>9. 风险免责与责任限制</h2>
+<ul><li>交易有风险，你可能损失部分或全部本金。Gexadecimal 不是交易所或经纪商，不保管资金，不执行交易，也不提供投资建议。内容与数据仅供参考，你需自行对所有交易决策负责。</li><li>在法律允许的范围内，对于因你的交易决策、数据错误或延迟、服务中断或数据丢失（包括保存在浏览器中的数据）造成的损失，我们不承担责任。</li></ul>
+</section>
+<section data-id="s10"><h2>10. 终止</h2>
+<p>你可以随时停止使用服务并自行删除账号（见 B8）。若你违反本条款或服务停止运营，我们可能暂停或终止你的访问权限。</p>
+</section>
+<section data-id="s11"><h2>11. 条款变更</h2>
+<p>我们可能会更新本条款与政策。每个版本都有版本号；内容变更后，你需要重新阅读并同意，方可继续使用。</p>
+</section>
+<h2 class="part">B 部分：隐私政策</h2>
+<section data-id="data"><h2>B1. 我们收集的数据</h2>
+<p>来自 Discord（identify 与 guilds.members.read 权限）：</p><ul><li>你的 Discord ID、显示名称或昵称以及头像。</li><li>你是否在服务器中以及你的角色，仅用于验证访问权限。</li><li>我们不会读取你的消息、查看你的邮箱，也不会获取你的 Discord 密码。</li></ul><p>来自 MT5 EA 与你的账号：</p><ul><li>你选择同步的已平仓订单：MT5 账号、订单编号、方向、手数、开平仓时间与价格、止损、止盈、盈亏、佣金、隔夜利息、手续费、magic、备注与平仓原因；以及最新余额和 MT5 账户信息。</li><li>账号信息：你的随机 EA 密钥、账号创建时间、最近一次登录时间以及最近一次成员资格检查时间。</li><li>同意记录：你同意的条款版本和时间，与你的 Discord ID 关联，用于证明你已同意，并在条款变更时要求重新同意。该记录不包含 IP 地址。</li></ul><p>我们不使用行为分析工具，不设置广告 Cookie，也不跨网站追踪你。</p>
+</section>
+<section data-id="b2"><h2>B2. 仅保存在你浏览器中的数据</h2>
+<ul><li>登录会话（默认 7 天后过期）、语言以及浅色/深色主题。</li><li>手动录入的日志数据、笔记、策略、情绪与日志设置；各图表的设置、品种、周期、指标与绘图。</li><li>你的 cTrader 信息（Client ID、Client Secret、Access Token）。这些值只保存在浏览器中，并由浏览器直接发送给 cTrader Open API，不会发送到 Gexadecimal 的服务器。</li><li>一个临时 Cookie（gx_state，最长 10 分钟，HttpOnly），仅在 Discord 登录期间用于防止请求伪造。</li></ul><p>因此，清除浏览器数据或更换设备会丢失这部分数据（已同步的 MT5 订单仍保留在服务器上）。在公用电脑上，请退出登录并清除网站数据。</p>
+</section>
+<section data-id="b3"><h2>B3. 数据用途</h2>
+<ul><li>验证你的登录，并检查你是否仍是服务器成员且拥有相应角色。</li><li>保存并展示你自己的订单、统计、Analytic 与 Flex Card。</li><li>记录你对条款的同意，保障并运营服务，修复错误并改进服务。</li></ul><p>我们不会出售你的数据，也不会将其用于广告或对你进行画像。</p>
+</section>
+<section data-id="b4"><h2>B4. 第三方服务</h2>
+<p>为了运行，Gexadecimal 使用以下服务，各方按其自身政策处理数据：</p><ul><li>Discord：登录验证，并检查你是否在服务器中。</li><li>Cloudflare（Workers 与 D1）：运行 API，并存储账号与交易数据。Cloudflare 可能为提供服务而处理 IP 地址等技术数据。</li><li>GitHub Pages：托管并提供网站访问。</li><li>Google Fonts 与 jsDelivr（CDN）：加载字体与图表库。打开首页、登录页或应用时，你的浏览器会向这些服务发送 IP 地址和浏览器信息，我们无法控制这些数据。本条款页面不加载外部字体。</li><li>cTrader Open API（Spotware）与你的经纪商：直接从你的浏览器接收你输入的 cTrader 信息。</li><li>银行或 PayPal：仅当你自行选择支持时涉及。</li></ul>
+</section>
+<section data-id="b5"><h2>B5. 数据共享</h2>
+<p>你的日志只能通过你自己的登录会话或 EA 密钥读取。除 B4 所列的基础设施服务或法律要求外，我们不会与第三方共享数据。运营者出于运行、维护与支持服务的目的拥有数据库的技术访问权限；我们不会为其他目的查看你的数据。</p>
+</section>
+<section data-id="b6"><h2>B6. 保存期限</h2>
+<ul><li>服务器上的数据会保留，直到你删除账号或服务停止运营。</li><li>登录会话默认 7 天后过期。若你生成新密钥并选择清除旧数据，已同步的 MT5 订单会立即删除。</li><li>浏览器中的数据保留在你的设备上，直到你清除。</li></ul>
+</section>
+<section data-id="b7"><h2>B7. 安全</h2>
+<p>与服务的连接使用 HTTPS。登录会话经过签名，每个人拥有独立的 EA 密钥，数据按 Discord 账号隔离，并定期重新检查服务器成员资格。没有任何系统是绝对安全的，因此请妥善保管 EA 密钥与 cTrader 信息，并保护好你的设备。</p>
+</section>
+<section data-id="b8"><h2>B8. 你的权利</h2>
+<ul><li>随时退出登录。</li><li>在日志页面将全部订单导出为 CSV，用于留存或迁移。</li><li>在“连接”页面生成新的 EA 密钥（可同时清除已同步的 MT5 订单）。</li><li>在“连接”页面点击“删除账号”按钮，永久删除你的账号和服务器上的全部数据。该操作需两步确认，无法恢复，并会同时删除你的同意记录。之后请从 MT5 中移除 EA。若你仍在服务器中，重新登录将创建一个全新的空账号，并需重新同意条款。</li><li>随时通过清除网站数据来删除浏览器中的数据。</li></ul><p>根据你所在地的法律，你可能还享有其他权利（访问、更正、反对处理）。请按 B9 所述联系我们。</p>
+</section>
+<section data-id="b9"><h2>B9. 联系我们</h2>
+<p>如果你对本条款或你的数据有疑问，请到社区的 Discord 服务器提问。</p>
 </section>
 <p class="back"><a href="login.html">← 返回登录</a></p>
 </div>
@@ -152,7 +260,7 @@ section{scroll-margin-top:70px}
   if (["vi", "en", "zh"].indexOf(lang) < 0) lang = "vi";
   var theme = q.get("theme") || ld("gx-theme") || "dark";
   if (q.get("embed") === "1") root.classList.add("embed");
-  var TITLES = { vi: "Điều khoản sử dụng và Chính sách dữ liệu – Gexadecimal", en: "Terms of Use and Data Policy – Gexadecimal", zh: "使用条款和数据政策 – Gexadecimal" };
+  var TITLES = { vi: "Điều khoản sử dụng và Chính sách quyền riêng tư – Gexadecimal", en: "Terms of Use and Privacy Policy – Gexadecimal", zh: "使用条款和隐私政策 – Gexadecimal" };
   function setLang(l, save) {
     root.dataset.l = l; root.lang = l; document.title = TITLES[l];
     Array.prototype.forEach.call(document.querySelectorAll(".bar button[data-l]"), function (b) { b.classList.toggle("on", b.dataset.l === l); });
