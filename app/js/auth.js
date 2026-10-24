@@ -42,6 +42,8 @@ const GX=(function(){
     localStorage.removeItem("tp_tok");localStorage.removeItem("tp_url"); // token chung cũ không còn dùng
   }catch(e){}
 
+  if(/[?&]cid=/.test(location.search))return g; // chart phụ (iframe cùng origin): trang chính đã xác nhận phiên rồi
+
   // xác nhận phiên với server + lấy tên, avatar, EA key
   fetch(api+"/auth/me",{headers:{Authorization:"Bearer "+tok}}).then(async r=>{
     if(r.status===401){let e="expired";try{e=(await r.json()).error||e}catch(_){}if(e==="maintenance"){document.documentElement.style.visibility="hidden";location.replace("../maintenance.html?s=1");return}g.expired(e);return}

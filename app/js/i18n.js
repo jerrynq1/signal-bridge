@@ -54,6 +54,21 @@ function walk(root){
   let n;while((n=w.nextNode())){if(n.nodeType===3){if(!skipTx(n.parentElement))doText(n)}else elAttrs(n)}
 }
 
+/* Nhãn tháng trên trục thời gian của chart */
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const monLbl=m=>lang==="en"?MON[m-1]:lang==="zh"?m+"月":"Th"+m;
+function chartLocale(){
+  try{
+    window.tickFmt=function(t){
+      if(typeof t!=="number")return null;const o=lp(t);
+      if(C.tf<86400&&(o.hour||o.minute))return p2(o.hour)+":"+p2(o.minute);
+      if(o.day===1)return o.month===1?String(o.year):monLbl(o.month);
+      return String(o.day);
+    };
+    applyTz();
+  }catch(e){}
+}
+
 /* ---------- Nút chọn ngôn ngữ (cờ SVG, hiển thị đúng cả trên Windows) ---------- */
 const star=(cx,cy,R,rot)=>{const p=[];for(let k=0;k<10;k++){const a=(rot==null?-90:rot)*Math.PI/180+k*Math.PI/5,r=k%2?R*.382:R;p.push((cx+r*Math.cos(a)).toFixed(2)+","+(cy+r*Math.sin(a)).toFixed(2))}return p.join(" ")};
 const small=(cx,cy)=>'<polygon fill="#ffde00" points="'+star(cx,cy,1,Math.atan2(5.2-cy,5-cx)*180/Math.PI)+'"/>';
@@ -90,8 +105,9 @@ function setLang(l){
   document.documentElement.lang=l==="zh"?"zh-CN":l;
   lb.querySelector(".lb").textContent=lname();lb.querySelector(".ic").innerHTML=FLAG[l];
   walk(document.body);
+  chartLocale();
 }
-window.I18N={set:setLang,get:()=>lang};
+window.I18N={set:setLang,get:()=>lang,tr:s=>conv(String(s))};
 
 new MutationObserver(ms=>{
   for(const m of ms){

@@ -194,7 +194,7 @@ function rules(){
 const mq=matchMedia('(max-width:760px)'),mob=()=>mq.matches;
 mq.addEventListener('change',()=>{if(cur==='jr')show('jr')});
 const go=v=>show(v==='log'||v==='dash'?'jr':v);
-const offline=()=>!(C.url&&C.token);
+const offline=()=>!(JC.url&&JC.token);
 const notice=()=>'<div class="card empty"><b>Chưa kết nối API</b><br>Vào mục <a href="#" data-goconn style="color:var(--acc);font-weight:700">Kết nối</a> để nhập API URL và Secret token. Sau khi kết nối, Journal sẽ tự đồng bộ lệnh từ MT5 mỗi khi lệnh đóng.</div>';
 document.addEventListener('click',e=>{if(e.target.closest('[data-goconn]')){e.preventDefault();show('conn')}});
 function jshow(v){
@@ -434,7 +434,7 @@ const inForm=()=>false; // đang gõ dở form thêm lệnh thì không vẽ l�
 let syBusy=false,syDirty=false,syBalAt=0;
 // Vốn ban đầu = số dư MT5 hiện tại - tổng PnL các lệnh của tài khoản trong journal, để "Vốn hiện tại" luôn khớp số dư MT5
 async function syncBal(url){
- const r=await fetch(url+'/api/quote',{headers:{'Authorization':'Bearer '+C.token}});
+ const r=await fetch(url+'/api/quote',{headers:{'Authorization':'Bearer '+JC.token}});
  if(r.status===401)GX.expired();
  if(!r.ok)return false;
  const ac=(await r.json()).account;
@@ -448,13 +448,13 @@ async function syncBal(url){
 }
 async function syncMT5(silent,days){
  if(syBusy)return;
- const url=C.url.replace(/\/$/,''),say=t=>{$('#syMsg').textContent=t};
- if(!url||!C.token){if(!silent)say('Nhập API URL và token trước.');return}
+ const url=JC.url.replace(/\/$/,''),say=t=>{$('#syMsg').textContent=t};
+ if(!url||!JC.token){if(!silent)say('Nhập API URL và token trước.');return}
  syBusy=true;if(!silent)say('Đang đồng bộ...');
  try{
   let since=Math.max(0,(SY.since||0)-(days||7)*864e5),rows=[];const lim=500; // lùi vài ngày để không sót lệnh EA gửi muộn
   for(let i=0;i<20;i++){
-   const r=await fetch(`${url}/api/trades?since=${since}&limit=${lim}`,{headers:{'Authorization':'Bearer '+C.token}});
+   const r=await fetch(`${url}/api/trades?since=${since}&limit=${lim}`,{headers:{'Authorization':'Bearer '+JC.token}});
    if(r.status===401)GX.expired();
    if(!r.ok)throw new Error('HTTP '+r.status);
    const b=await r.json();rows.push(...b);
@@ -492,10 +492,10 @@ $('#syb').onclick=()=>syncMT5(false);
 $('#syr').onclick=()=>{SY.since=0;saveSY();syncMT5(false)};
 S.trades.forEach(t=>{if(String(t.id).startsWith('mt5-')&&!(t.sl>0)&&t.risk==null)t.r=null});
 if(S.trades.some(t=>String(t.id).startsWith('mt5-')&&!('tp' in t))){SY.since=0;saveSY()} // dữ liệu cũ chưa có TP: tải lại một lần
-if(C.url&&C.token)syncMT5(true); // tự đồng bộ khi mở journal
+if(JC.url&&JC.token)syncMT5(true); // tự đồng bộ khi mở journal
 // tự cập nhật mỗi 15 giây khi tab đang mở (EA đẩy lệnh lên ngay khi đóng, web chỉ việc kéo về)
 setInterval(()=>{
- if(document.hidden||!C.url||!C.token)return;
+ if(document.hidden||!JC.url||!JC.token)return;
  if(syDirty&&!inForm()){syDirty=false;refresh()}
  syncMT5(true,2);
 },15000);

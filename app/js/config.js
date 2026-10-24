@@ -12,3 +12,6 @@ window.GX_CONFIG = {
      app/index.html?preview=abc123xyz trên trình duyệt đó, rồi đăng nhập là vào được app. Để "" = tắt cách này. */
   MAINTENANCE_KEY: "jerrynq1"
 };
+
+/* Dữ liệu cTrader: Client ID / Secret / Access Token KHÔNG nằm ở web nữa mà là secret của Cloudflare Worker (CT_CLIENT_ID, CT_CLIENT_SECRET,
+   CT_ACCESS_TOKEN, xem README). Web chỉ cần API_URL ở trên: chart nối tới wss://<API_URL>/ct bằng phiên Discord. */
