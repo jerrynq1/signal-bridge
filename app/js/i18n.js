@@ -106,6 +106,7 @@ function setLang(l){
   lb.querySelector(".lb").textContent=lname();lb.querySelector(".ic").innerHTML=FLAG[l];
   walk(document.body);
   chartLocale();
+  document.dispatchEvent(new Event("gx-lang"));   // module tự dựng chuỗi bằng Intl (Calendar...) vẽ lại theo ngôn ngữ mới
 }
 window.I18N={set:setLang,get:()=>lang,tr:s=>conv(String(s))};
 

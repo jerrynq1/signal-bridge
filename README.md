@@ -275,6 +275,8 @@ Lỗi cũ: Bid/Ask vẫn nhảy nhưng nến + footprint đứng im. Nguyên nh�
 6. Khi phát hiện bị chép: gom bằng chứng (link bản chép, ảnh chụp, lịch sử commit của bạn), tìm nhà cung cấp hosting/GitHub của bên kia và gửi DMCA takedown notice.
 
 ## Economic Calendar (tab mới, `#cal`)
+- **Chọn ngày**: ngoài Hôm nay / Tuần này / Tuần sau còn có nút chọn ngày (một ngày hoặc một khoảng), mũi tên ‹ › dịch cả khoảng tới/lui, hộp lịch tự vẽ trong `calendar.js` (`#calPop`, CSS `.cal-pp` cuối `style.css`; gắn vào `<body>`, trên điện thoại thành bottom sheet). Ngày tuỳ chọn không được nhớ qua lần mở sau. Dữ liệu chỉ có trong khoảng ngày mà Worker trả về; ngày ngoài khoảng đó hiện thông báo kèm khoảng nguồn đang có.
+- **Đa ngôn ngữ**: `i18n.js` phát sự kiện `gx-lang` khi đổi ngôn ngữ, Calendar vẽ lại để ngày/tháng/đơn vị đếm ngược đổi theo; chuỗi có ngữ cảnh riêng ("Giờ" = Time) dùng hàm `K()` trong `calendar.js`.
 
 - File: `app/js/calendar.js` (module `CAL`), CSS nối cuối `style.css`, section `v-cal` trong `app/index.html`, mục sidebar trong `connection-ui.js` (`V`, `IC.cal`, hook trong `show()`), bản dịch trong `i18n-data-journal.js`.
 - Tính năng: lọc Cao/Trung bình/Thấp, Thực tế / Dự báo / Trước đó, đếm ngược sự kiện kế tiếp + từng dòng (trong 24 giờ), lọc theo đồng tiền (nút "Theo chart" lấy tiền tệ từ mã đang mở), xem Hôm nay / Tuần này / Tuần sau, giờ theo múi giờ đã chọn trong app.
