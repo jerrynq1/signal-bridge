@@ -6,8 +6,8 @@ window.GX_CONFIG = {
   /* BẢO TRÌ: true = sau khi đăng nhập sẽ bị chuyển sang maintenance.html thay vì vào app.
      Muốn mở app cho mọi người: đổi true thành false (xem README). */
   MAINTENANCE: false,
-  MAINTENANCE_ALLOW: ["889713051631239189"],
-  MAINTENANCE_KEY: "jerrynq1"
+  MAINTENANCE_ALLOW: [""],
+  MAINTENANCE_KEY: ""
 };
 
 
