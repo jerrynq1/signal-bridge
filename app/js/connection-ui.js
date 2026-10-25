@@ -91,7 +91,8 @@ IC.an='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="
 IC.dl='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
 IC.cf='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2M8 3v3M12 3v3"/></svg>';
 IC.card='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M6.5 15h4"/></svg>';
-const V=[["chart","Chart"],["tpo","TPO Chart"],["tps","TPO Setting"],["ind","Indicator"],["cs","Chart Setting"],["jr","Journal"],["an","Analytic"],["card","Flex Card"],["conn","Kết nối"],["dl","Tải xuống"],["cf","Mời cà phê"]];
+IC.cal='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3M13 14h3M8 17.5h3"/></svg>';
+const V=[["chart","Chart"],["tpo","TPO Chart"],["tps","TPO Setting"],["ind","Indicator"],["cs","Chart Setting"],["jr","Journal"],["an","Analytic"],["card","Flex Card"],["cal","Economic Calendar"],["conn","Kết nối"],["dl","Tải xuống"],["cf","Mời cà phê"]];
 let cur="chart";
 function show(v){
   cur=v;document.body.dataset.v=v;V.forEach(([k])=>$("v-"+k).classList.toggle("on",k===v));
@@ -102,6 +103,7 @@ function show(v){
   if(v==="tps")buildTPS();
   if(v==="conn")fillMt5();
   if(window.JR&&["jr","an","card"].includes(v))JR.show(v);
+  if(v==="cal"&&window.CAL)CAL.show();
   if(v==="dl")fillDl();
   document.body.classList.remove("so");
   if(!EMB)try{history.replaceState(null,"","#"+v)}catch(e){}

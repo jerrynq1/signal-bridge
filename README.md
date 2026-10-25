@@ -273,3 +273,11 @@ Lỗi cũ: Bid/Ask vẫn nhảy nhưng nến + footprint đứng im. Nguyên nh�
 4. Dán đoạn mã đó vào `index.html` và `login.html`, ngay chỗ có comment `DMCA_BADGE` trong `<footer>`. Nếu muốn có ở cả trong app thì dán thêm vào `app/index.html`.
 5. Deploy lại, mở web kiểm tra huy hiệu hiện ra và bấm vào thấy trang trạng thái của DMCA.com.
 6. Khi phát hiện bị chép: gom bằng chứng (link bản chép, ảnh chụp, lịch sử commit của bạn), tìm nhà cung cấp hosting/GitHub của bên kia và gửi DMCA takedown notice.
+
+## Economic Calendar (tab mới, `#cal`)
+
+- File: `app/js/calendar.js` (module `CAL`), CSS nối cuối `style.css`, section `v-cal` trong `app/index.html`, mục sidebar trong `connection-ui.js` (`V`, `IC.cal`, hook trong `show()`), bản dịch trong `i18n-data-journal.js`.
+- Tính năng: lọc Cao/Trung bình/Thấp, Thực tế / Dự báo / Trước đó, đếm ngược sự kiện kế tiếp + từng dòng (trong 24 giờ), lọc theo đồng tiền (nút "Theo chart" lấy tiền tệ từ mã đang mở), xem Hôm nay / Tuần này / Tuần sau, giờ theo múi giờ đã chọn trong app.
+- Dữ liệu đi qua Worker: trình duyệt gọi `GET /api/calendar`, Worker lấy từ nguồn (giữ địa chỉ + key), cache trên R2 (binding `CAL`, TTL 10 phút) và trả kèm `provider`. Đổi nguồn bằng biến `CAL_PROVIDER` ("fc" mặc định | "bq") trên Worker. Thêm nguồn mới = thêm hàm vào `N` (calendar.js) và nhánh URL trong `calUpstream` (worker.js).
+- **Giấy phép**: financecalendar.com cho dùng miễn phí kể cả thương mại NHƯNG phải có link hiển thị tới financecalendar.com gần dữ liệu (đã có ở chân thẻ, đừng xoá). Nguồn này không có số Dự báo. Hạn mức: 2.000 request/ngày/IP, app cache 5 phút.
+- Không dùng Forex Factory / Investing.com: điều khoản của họ cấm sao chép / phân phối lại dữ liệu lịch.

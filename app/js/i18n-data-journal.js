@@ -6,6 +6,28 @@ const LANGS=[["vi","Tiếng Việt"],["en","English"],["zh","中文"]];
 
 /* [vi, en, zh] */
 const T=[
+/* --- Economic Calendar --- */
+["Economic Calendar","Economic Calendar","经济日历"],
+["Giờ hiển thị theo múi giờ bạn chọn trong app","Times shown in the timezone you set in the app","时间按应用内所选时区显示"],
+["Sự kiện tiếp theo","Next event","下一事件"],
+["Hôm nay","Today","今天"],
+["Tuần này","This week","本周"],
+["Tuần sau","Next week","下周"],
+["Cao","High","高"],
+["Trung bình","Medium","中"],
+["Thấp","Low","低"],
+["Giờ","Time","时间"],
+["Tiền tệ","Currency","货币"],
+["Tác động","Impact","影响"],
+["Sự kiện","Event","事件"],
+["Thực tế","Actual","实际"],
+["Dự báo","Forecast","预测"],
+["Trước đó","Previous","前值"],
+["Đếm ngược","Countdown","倒计时"],
+["Đang tải lịch…","Loading calendar…","正在加载日历…"],
+["Thử lại","Retry","重试"],
+["Không có sự kiện nào khớp bộ lọc","No events match the filters","没有符合筛选的事件"],
+["vừa ra","just out","刚发布"],
 /* --- Hộp thoại, Xuất/Nhập CSV --- */
 ["Nhập CSV","Import CSV","导入 CSV"],
 ["Nhập","Import","导入"],
