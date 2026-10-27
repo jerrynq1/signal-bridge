@@ -44,7 +44,7 @@ html.emb body::before,html.emb #sky,html.emb #side,html.emb .topbar,html.emb .sc
 html.emb body{min-height:0}
 html.emb .main{margin-left:0}
 html.emb .wrap{max-width:none;padding:6px}
-html.emb body:not([data-v="chart"]):not([data-v="tpo"]) #embBack{display:inline-flex;margin:4px 0 10px}
+html.emb body:not([data-v="chart"]):not([data-v="tpo"]) #embBack{display:inline-flex;margin:4px 0 10px;position:sticky;top:4px;z-index:50}
 html.emb #v-chart.on{display:flex;flex-direction:column;height:100vh;height:100dvh;min-height:0}
 html.emb #v-chart>.card.bar{flex:none;padding:6px 8px;gap:6px}
 html.emb #chartCard{flex:1 1 auto;height:auto!important;min-height:0;margin-top:6px}

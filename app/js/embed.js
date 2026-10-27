@@ -23,6 +23,8 @@ addEventListener("storage",ev=>{
 const TPOE=QS.get("v")==="tpo";   // chart phụ kiểu TPO: mở thẳng tab TPO, ô chọn mã chuyển lên thanh công cụ TPO
 if(TPOE){const bar=$("v-tpo").querySelector(".bar"),sw=document.querySelector(".symw");if(bar&&sw)bar.insertBefore(sw,bar.firstChild)}
 $("embBack").onclick=()=>show(TPOE?"tpo":"chart");
+/* phím Esc cũng quay về chart (khi đang ở tab Indicator / Setting... trong chart phụ và không có hộp thoại nào đang mở) */
+addEventListener("keydown",e=>{if(e.key==="Escape"&&typeof cur!=="undefined"&&cur!=="chart"&&cur!=="tpo"&&!document.querySelector(".mdl"))show(TPOE?"tpo":"chart")});
 /* báo cho trang cha: mã, khung giờ, giá bid (để hiện trên tiêu đề thẻ) */
 let last="";
 function report(){
