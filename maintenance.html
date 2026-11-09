@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Đang bảo trì – Gexadecimal</title>
+<link rel="icon" type="image/png" href="app/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800&family=Sora:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800&family=Sora:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"></noscript>
+<style>
+:root{--bgg:radial-gradient(130% 95% at 50% -10%,#2b1c4f 0%,#120c2b 38%,#070514 70%,#020108 100%);--card:rgba(26,19,48,.58);--hole:#16102e;--ink:#fff4d9;--mut:#c4b79a;--line:rgba(244,201,106,.26);--inp:rgba(255,236,190,.06);--acc:#f2c660;--star:255,228,160;--nebo:1;--grad:linear-gradient(135deg,#fff0b8 0%,#f2c660 28%,#b8801f 55%,#f6d77f 78%,#a46c14 100%);--onacc:#1a1204;--glow:242,198,96;--neb:radial-gradient(42% 36% at 18% 22%,rgba(255,191,64,.34),transparent 70%),radial-gradient(38% 34% at 84% 18%,rgba(125,80,230,.38),transparent 70%),radial-gradient(46% 40% at 68% 88%,rgba(255,140,70,.22),transparent 70%);color-scheme:dark}
+:root[data-theme="light"]{--bgg:radial-gradient(130% 95% at 50% -10%,#fff6dc 0%,#f6ecff 45%,#efe6fb 75%,#e9e0f6 100%);--card:rgba(255,251,240,.74);--hole:#fff8e8;--ink:#2a1c06;--mut:#7a6740;--line:rgba(176,116,26,.3);--inp:rgba(255,255,255,.85);--acc:#a8701a;--star:176,116,26;--nebo:.75;--glow:176,116,26;--neb:radial-gradient(42% 36% at 18% 22%,rgba(255,196,70,.42),transparent 70%),radial-gradient(38% 34% at 84% 18%,rgba(170,130,255,.34),transparent 70%),radial-gradient(46% 40% at 68% 88%,rgba(255,170,100,.28),transparent 70%);color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;min-height:100vh;background:var(--bgg) fixed;color:var(--ink);font:15px/1.55 "Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-25%;z-index:0;pointer-events:none;opacity:var(--nebo);background:var(--neb);animation:drift 50s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(-3%,-2%) rotate(0)}to{transform:translate(4%,3%) rotate(8deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinr{to{transform:rotate(-360deg)}}
+@keyframes slide{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.tools{position:fixed;z-index:5;top:max(12px,env(safe-area-inset-top,0px));right:14px;display:flex;gap:6px;align-items:center}
+.tools button{height:38px;min-width:38px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--inp);color:var(--mut);font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.tools button:hover{color:var(--ink);border-color:var(--acc)}
+.tools button.on{background:var(--grad);color:var(--onacc);border-color:transparent}
+main{position:relative;z-index:1;min-height:100vh;display:grid;place-items:center;padding:70px 18px 40px}
+.card{width:100%;max-width:560px;text-align:center;padding:36px 28px;border-radius:20px;border:1px solid var(--line);background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 24px 80px rgba(0,0,10,.5),0 0 70px rgba(var(--glow),.14);animation:rise .7s both}
+.brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px}
+.brand img{height:40px;filter:drop-shadow(0 0 10px rgba(255,190,60,.5))}
+.wm{font-family:Unbounded,"Arial Black",sans-serif;font-weight:800;font-size:16px;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(180deg,#fff0b8,#e3b24a 55%,#a8701a);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-theme="light"] .wm{background:linear-gradient(180deg,#c28a1c,#8a5a0c);-webkit-background-clip:text;background-clip:text}
+.gears{position:relative;width:104px;height:84px;margin:0 auto 18px;color:var(--acc);filter:drop-shadow(0 0 14px rgba(var(--glow),.45))}
+.gears svg{position:absolute}
+.g1{width:62px;height:62px;left:8px;top:0;animation:spin 9s linear infinite}
+.g2{width:44px;height:44px;left:52px;top:34px;animation:spinr 6.5s linear infinite}
+.pill{display:inline-block;font-size:12px;padding:3px 12px;border-radius:999px;background:var(--inp);color:var(--acc);border:1px solid var(--line);font-weight:700}
+h1{font:800 clamp(26px,5vw,38px)/1.15 Sora,sans-serif;margin:14px 0 12px;background:linear-gradient(110deg,#fff0b8 0%,#f2c660 40%,#d9902a 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-theme="light"] h1{background:linear-gradient(135deg,#b8780f,#8f5a08);-webkit-background-clip:text;background-clip:text}
+p{margin:0 0 8px;color:var(--mut)}
+.bar{position:relative;height:6px;margin:22px auto 24px;max-width:320px;border-radius:99px;background:var(--inp);border:1px solid var(--line);overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:40%;border-radius:99px;background:var(--grad);animation:slide 1.8s ease-in-out infinite}
+.myid{margin:18px 0 0;font-size:12px;color:var(--mut)}.myid code{cursor:pointer;color:var(--acc);font-weight:700;word-break:break-all}
+.acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;font:inherit;font-weight:700;border:0;background:var(--grad);color:var(--onacc);padding:10px 20px;border-radius:999px;cursor:pointer;text-decoration:none;box-shadow:0 0 18px rgba(var(--glow),.35),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 4px rgba(120,70,0,.3)}
+.btn:hover{box-shadow:0 0 28px rgba(var(--glow),.6),inset 0 1px 0 rgba(255,255,255,.6)}
+.btn.ghost{background:var(--inp);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="tools" role="group" aria-label="Language">
+  <button type="button" data-l="vi">VI</button><button type="button" data-l="en">EN</button><button type="button" data-l="zh">中文</button>
+  <button type="button" id="th" aria-label="Theme"></button>
+</div>
+<main>
+  <section class="card">
+    <div class="brand"><img src="app/img/logo.png" alt=""><span class="wm">Gexadecimal</span></div>
+    <div class="gears" aria-hidden="true">
+      <svg class="g1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      <svg class="g2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </div>
+    <span class="pill" data-t="pill"></span>
+    <h1 data-t="h1"></h1>
+    <p data-t="p1"></p>
+    <p data-t="p2"></p>
+    <div class="bar" aria-hidden="true"><i></i></div>
+    <div class="acts">
+      <a class="btn" href="index.html" data-t="home"></a>
+      <button class="btn ghost" id="lo" type="button" data-t="out"></button>
+    </div>
+    <p class="myid" id="diag" hidden></p>
+    <p class="myid" id="myid" hidden><span data-t="idl"></span> <code id="uid" title="Copy"></code></p>
+  </section>
+</main>
+<script>document.write('<script src="app/js/config.js?t='+Date.now()+'"><\/script>')</script>
+<script>
+/* Tắt bảo trì (config.js > MAINTENANCE:false) thì ai mở trang này cũng được đưa thẳng vào app. */
+if (!(window.GX_CONFIG && GX_CONFIG.MAINTENANCE) && !/[?&]s=1/.test(location.search)) location.replace("app/index.html");   // ?s=1 = server đang bảo trì, không đưa vào app (tránh lặp)
+
+const $ = s => document.querySelector(s);
+const ld = (k, d) => { try { return localStorage.getItem(k) ?? d } catch (e) { return d } };
+const sv = (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} };
+const D = {
+  vi: { t: "Đang bảo trì – Gexadecimal", pill: "● Bảo trì", h1: "Đang bảo trì", p1: "Gexadecimal đang được hoàn thiện và chưa mở công khai.", p2: "Cảm ơn bạn đã quan tâm, chúng tôi sẽ sớm quay lại.", home: "Về trang chủ", out: "Đăng xuất", idl: "Discord ID của bạn (bấm để sao chép):", dEmpty: "Chưa có ID nào trong MAINTENANCE_ALLOW (app/js/config.js).", dNum: "Có ID trong MAINTENANCE_ALLOW chưa đặt trong dấu nháy kép nên bị làm tròn sai. Hãy viết dạng [\"123...\"].", dNo: "ID của bạn chưa nằm trong MAINTENANCE_ALLOW. Hãy sao chép ID bên dưới dán vào đó.", dYes: "ID của bạn đã có trong MAINTENANCE_ALLOW nhưng app vẫn chặn: app/index.html hoặc app/js/auth.js trên web đang là bản cũ, hãy cập nhật và bấm Ctrl+F5." },
+  en: { t: "Under Maintenance – Gexadecimal", pill: "● Maintenance", h1: "Under Maintenance", p1: "Gexadecimal is being finished and is not open to the public yet.", p2: "Thank you for your interest, we will be back soon.", home: "Back to home", out: "Log out", idl: "Your Discord ID (click to copy):", dEmpty: "MAINTENANCE_ALLOW (app/js/config.js) is empty.", dNum: "An ID in MAINTENANCE_ALLOW is not in double quotes, so it was rounded. Write it like [\"123...\"].", dNo: "Your ID is not in MAINTENANCE_ALLOW. Copy the ID below into it.", dYes: "Your ID is in MAINTENANCE_ALLOW but the app still blocks you: app/index.html or app/js/auth.js on the site is an old version. Update them and press Ctrl+F5." },
+  zh: { t: "维护中 – Gexadecimal", pill: "● 维护", h1: "系统维护中", p1: "Gexadecimal 正在完善中，暂未对外开放。", p2: "感谢你的关注，我们很快回来。", home: "返回首页", out: "退出登录", idl: "你的 Discord ID（点击复制）：", dEmpty: "MAINTENANCE_ALLOW（app/js/config.js）为空。", dNum: "MAINTENANCE_ALLOW 中有 ID 没有加双引号，数值被四舍五入。请写成 [\"123...\"]。", dNo: "你的 ID 不在 MAINTENANCE_ALLOW 中，请把下方 ID 复制进去。", dYes: "你的 ID 已在 MAINTENANCE_ALLOW 中，但应用仍拦截：网站上的 app/index.html 或 app/js/auth.js 是旧版本，请更新并按 Ctrl+F5。" }
+};
+let L = ld("gx-lang", ""); if (!D[L]) { const n = (navigator.language || "").toLowerCase(); L = n.startsWith("zh") ? "zh" : n.startsWith("vi") ? "vi" : "en"; }
+function setLang(l) {
+  L = l; sv("gx-lang", l); sv("tp_lang", l);
+  document.documentElement.lang = l === "zh" ? "zh-CN" : l; document.title = D[l].t;
+  document.querySelectorAll("[data-t]").forEach(e => e.textContent = D[l][e.dataset.t]);
+  document.querySelectorAll(".tools [data-l]").forEach(b => b.classList.toggle("on", b.dataset.l === l));
+}
+document.querySelectorAll(".tools [data-l]").forEach(b => b.onclick = () => setLang(b.dataset.l));
+setLang(L);
+
+let T = ld("gx-theme", "") || ld("tp_theme", "") || (matchMedia("(prefers-color-scheme:light)").matches ? "light" : "dark");
+function setTheme(t) { T = t; document.documentElement.dataset.theme = t; sv("gx-theme", t); sv("tp_theme", t); $("#th").textContent = t === "dark" ? "☀" : "🌙"; }
+$("#th").onclick = () => setTheme(T === "dark" ? "light" : "dark");
+setTheme(T);
+
+(function () {
+  try {
+    const t = localStorage.getItem("gx_session") || "", d = JSON.parse(atob(t.split(".")[0].replace(/-/g, "+").replace(/_/g, "/")));
+    if (d && d.uid && /[?&]debug=1/.test(location.search)) {
+      const A = (window.GX_CONFIG && GX_CONFIG.MAINTENANCE_ALLOW) || [];
+      const k = !A.length ? "dEmpty" : A.some(x => typeof x !== "string") ? "dNum" : A.map(x => x.trim()).includes(String(d.uid)) ? "dYes" : "dNo";
+      $("#diag").dataset.t = k; $("#diag").textContent = D[L][k]; $("#diag").hidden = false;
+    }
+    if (d && d.uid) { $("#uid").textContent = d.uid; $("#myid").hidden = false; $("#uid").onclick = () => { try { navigator.clipboard.writeText(String(d.uid)); $("#uid").textContent = d.uid + " ✓"; } catch (e) {} }; }
+  } catch (e) {}
+})();
+$("#lo").onclick = () => { try { localStorage.removeItem("gx_session") } catch (e) {} location.replace("login.html"); };
+
+(function () {
+  const cv = $("#sky"), x = cv.getContext("2d"), rm = matchMedia("(prefers-reduced-motion:reduce)").matches;
+  let W, H, st = [], col = "255,255,255", f = 0;
+  function size() { const d = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; x.setTransform(d, 0, 0, d, 0, 0);
+    st = Array.from({ length: Math.round(W * H / 5000) }, () => ({ x: Math.random() * W, y: Math.random() * H, z: Math.random() * .9 + .1, p: Math.random() * 6.28, s: Math.random() * .004 + .001 })); }
+  function frame(t) {
+    if (f++ % 30 === 0) col = getComputedStyle(document.documentElement).getPropertyValue("--star").trim() || "255,255,255";
+    x.clearRect(0, 0, W, H);
+    st.forEach(s => { const a = .3 + .7 * Math.abs(Math.sin(s.p + t * s.s)); x.fillStyle = `rgba(${col},${a * s.z})`; x.beginPath(); x.arc(s.x, (s.y + (rm ? 0 : t * .006 * s.z)) % H, s.z * 1.4 + .2, 0, 6.283); x.fill(); });
+    if (!rm) requestAnimationFrame(frame);
+  }
+  size(); addEventListener("resize", () => { size(); if (rm) frame(0); }); requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
